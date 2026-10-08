@@ -162,6 +162,11 @@ from django.contrib.messages import constants as message_constants  # noqa: E402
 
 MESSAGE_TAGS = {message_constants.ERROR: "danger"}
 
+# Send only our site origin (not full URLs) to other sites. OpenStreetMap's tile
+# servers require a Referer and show "403 Access blocked" tiles without one, so
+# Django's default "same-origin" must not be used here.
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
 # --------------------------------------------------------------------------
 # Production security (enabled automatically when DEBUG is off)
 # --------------------------------------------------------------------------
@@ -172,7 +177,6 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = SESSION_COOKIE_SECURE
     SECURE_HSTS_SECONDS = int(os.environ.get("DJANGO_HSTS_SECONDS", "0"))
     SECURE_CONTENT_TYPE_NOSNIFF = True
-    SECURE_REFERRER_POLICY = "same-origin"
     X_FRAME_OPTIONS = "DENY"
 
 LOGGING = {

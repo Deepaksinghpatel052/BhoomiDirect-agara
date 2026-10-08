@@ -132,7 +132,7 @@
       if (typeof L === "undefined") return;
       const cfg = $(this).data("map");
       const map = L.map(this, { scrollWheelZoom: false }).setView([cfg.lat, cfg.lng], cfg.zoom || 11);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 18,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       }).addTo(map);

@@ -60,7 +60,7 @@
         const l = localityData[$locality.val()]; start = [l.lat, l.lng]; zoom = 14;
       }
       pickerMap = L.map("mapPicker").setView(start, zoom);
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19, attribution: "&copy; OpenStreetMap",
       }).addTo(pickerMap);
 
