@@ -62,6 +62,7 @@
       pickerMap = L.map("mapPicker").setView(start, zoom);
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19, attribution: "&copy; OpenStreetMap",
+        referrerPolicy: "strict-origin-when-cross-origin", // OSM requires a Referer (see main.js)
       }).addTo(pickerMap);
 
       function placePin(latlng) {

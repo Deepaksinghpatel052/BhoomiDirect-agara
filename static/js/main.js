@@ -134,6 +134,9 @@
       const map = L.map(this, { scrollWheelZoom: false }).setView([cfg.lat, cfg.lng], cfg.zoom || 11);
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 18,
+        // OSM blocks tiles ("403 Access blocked") without a Referer; set it per tile so a
+        // stricter page-level Referrer-Policy (e.g. from a proxy) cannot break the map.
+        referrerPolicy: "strict-origin-when-cross-origin",
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       }).addTo(map);
       const pointsId = $(this).data("points-id");
