@@ -141,8 +141,7 @@ Set at least:
 ```ini
 DJANGO_SECRET_KEY=<the random string>
 DJANGO_DEBUG=false
-DJANGO_ALLOWED_HOSTS=<server-ip>,your-domain.com,www.your-domain.com
-DJANGO_CSRF_TRUSTED_ORIGINS=http://<server-ip>,https://your-domain.com,https://www.your-domain.com
+DJANGO_ALLOWED_HOSTS=*                       # opens on any domain or IP (no "Bad Request 400")
 SITE_DOMAIN=https://your-domain.com          # or http://<server-ip> if there is no domain yet
 DJANGO_ADMIN_PASSWORD=<a strong password>    # replaces the demo password admin123
 HTTP_PORT=80
@@ -260,7 +259,6 @@ The public port comes from `HTTP_PORT` in `.env`. Nothing in `docker-compose.yml
 ```ini
 # .env
 HTTP_PORT=8085
-DJANGO_CSRF_TRUSTED_ORIGINS=http://<server-ip>:8085,http://localhost:8085
 SITE_DOMAIN=http://<server-ip>:8085
 ```
 
@@ -289,8 +287,8 @@ All settings come from `.env` (see `.env.example`). The defaults are safe for lo
 |---|---|---|
 | `DJANGO_SECRET_KEY` | demo key | **Must** be a random value on a server |
 | `DJANGO_DEBUG` | `True` | Use `false` on a server |
-| `DJANGO_ALLOWED_HOSTS` | `127.0.0.1,localhost,*` | Domains / IPs the site answers on |
-| `DJANGO_CSRF_TRUSTED_ORIGINS` | empty | Full origins (`https://domain.com`) allowed to submit forms |
+| `DJANGO_ALLOWED_HOSTS` | `*` | `*` = any domain or IP. To lock down, list them: `182.64.233.217,your-domain.com` |
+| `DJANGO_CSRF_TRUSTED_ORIGINS` | empty | Optional. Forms work on any domain/IP already; only list `https://domain.com` when behind an extra HTTPS proxy such as Cloudflare |
 | `SITE_DOMAIN` | `http://127.0.0.1:8000` | Used in canonical URLs, sitemap and social tags |
 | `SEED_DEMO_ON_START` | `true` | Docker: load demo data on the first start only |
 | `DJANGO_ADMIN_USERNAME` / `DJANGO_ADMIN_PASSWORD` | `admin` / empty | Docker: sets the admin password on every start |
