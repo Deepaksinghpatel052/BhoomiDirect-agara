@@ -1,12 +1,16 @@
 # BhoomiDirect Agra - production stack
 #   docker compose up -d --build
 # web   : Django + Gunicorn + WhiteNoise (static files baked into the image)
-# nginx : public entry point on ${HTTP_PORT:-80}, serves /media/ from the data volume
+# nginx : public entry point on HTTP_PORT from .env (default 80), serves /media/
+#
+# The port and the stack name come from .env, so several copies can run on one
+# machine: give each copy its own HTTP_PORT and COMPOSE_PROJECT_NAME.
+name: ${COMPOSE_PROJECT_NAME:-bhoomidirect}
+
 services:
   web:
     build: .
-    image: bhoomidirect-agra:latest
-    container_name: bhoomidirect-web
+    image: ${COMPOSE_PROJECT_NAME:-bhoomidirect}-web:latest
     restart: unless-stopped
     env_file: .env
     volumes:
@@ -16,13 +20,12 @@ services:
 
   nginx:
     image: nginx:1.27-alpine
-    container_name: bhoomidirect-nginx
     restart: unless-stopped
     depends_on:
       web:
         condition: service_healthy
     ports:
-      - "${HTTP_PORT:-80}:80"
+      - "${HTTP_BIND:-0.0.0.0}:${HTTP_PORT:-80}:80"   # host port from .env
     volumes:
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
       - app_data:/app/data:ro

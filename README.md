@@ -12,7 +12,8 @@ A Django demo for a direct land-buying company in Agra, Uttar Pradesh. Owners su
 4. [Deploy on a server (Ubuntu + Docker)](#3-deploy-on-a-server-ubuntu--docker)
 5. [HTTPS with a domain](#4-https-with-a-domain)
 6. [Day-to-day server commands](#5-day-to-day-server-commands)
-7. [Environment variables](#environment-variables)
+7. [Run on a different port / several copies](#6-run-on-a-different-port--several-copies)
+8. [Environment variables](#environment-variables)
 
 ## Tech stack
 
@@ -176,7 +177,7 @@ Point the domain's **A record** to the server IP, then pick one option.
 
 **Option B: Certbot on the server.** Run the app on an internal port and let the host's Nginx handle HTTPS.
 
-1. In `.env` set `HTTP_PORT=8080`, then run `docker compose up -d`.
+1. In `.env` set `HTTP_PORT=8080` and `HTTP_BIND=127.0.0.1` (only the host Nginx can reach it), then run `docker compose up -d`.
 2. Install Nginx and Certbot: `sudo apt install -y nginx certbot python3-certbot-nginx`
 3. Create `/etc/nginx/sites-available/bhoomidirect` with:
 
@@ -248,7 +249,35 @@ docker compose up -d
 docker compose down -v && docker compose up -d --build
 ```
 
-> The volume is named `<folder-name>_app_data` (for example `bhoomidirect_app_data`).
+> The volume is named `<COMPOSE_PROJECT_NAME>_app_data` (default `bhoomidirect_app_data`).
+
+---
+
+## 6. Run on a different port / several copies
+
+The public port comes from `HTTP_PORT` in `.env`. Nothing in `docker-compose.yml` needs editing.
+
+```ini
+# .env
+HTTP_PORT=8085
+DJANGO_CSRF_TRUSTED_ORIGINS=http://<server-ip>:8085,http://localhost:8085
+SITE_DOMAIN=http://<server-ip>:8085
+```
+
+```bash
+docker compose up -d          # recreates Nginx on the new port
+```
+
+The site is now at `http://<server-ip>:8085`. Open the port in the firewall: `sudo ufw allow 8085/tcp`.
+
+**Several copies on one server** (for example a demo copy and a client copy): clone into separate folders and give each its own port and stack name in its `.env`:
+
+| Folder | `HTTP_PORT` | `COMPOSE_PROJECT_NAME` |
+|---|---|---|
+| `/opt/bhoomidirect` | `80` | `bhoomidirect` |
+| `/opt/bhoomidirect-demo` | `8081` | `bhoomidirect_demo` |
+
+Each copy gets its own containers, database and uploads (`<COMPOSE_PROJECT_NAME>_app_data` volume).
 
 ---
 
@@ -265,7 +294,9 @@ All settings come from `.env` (see `.env.example`). The defaults are safe for lo
 | `SITE_DOMAIN` | `http://127.0.0.1:8000` | Used in canonical URLs, sitemap and social tags |
 | `SEED_DEMO_ON_START` | `true` | Docker: load demo data on the first start only |
 | `DJANGO_ADMIN_USERNAME` / `DJANGO_ADMIN_PASSWORD` | `admin` / empty | Docker: sets the admin password on every start |
-| `HTTP_PORT` | `80` | Public port of the Nginx container |
+| `HTTP_PORT` | `80` | Public port of the site (Nginx container) |
+| `HTTP_BIND` | `0.0.0.0` | `127.0.0.1` = only reachable through a reverse proxy on the same server |
+| `COMPOSE_PROJECT_NAME` | `bhoomidirect` | Stack name (containers, image, volume). Use a unique value per copy |
 | `GUNICORN_WORKERS` / `GUNICORN_TIMEOUT` | `3` / `60` | App server tuning |
 | `DJANGO_SECURE_SSL_REDIRECT`, `DJANGO_SECURE_COOKIES`, `DJANGO_HSTS_SECONDS` | off | Turn on after HTTPS works |
 | `DJANGO_SERVE_MEDIA` | `true` | Django serves `/media/` when running without Nginx |
