@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block seo %}{% include "partials/seo.html" with seo_title="Sell Land in Agra: All Areas & Tehsils We Buy In | BhoomiDirect Agra" seo_description="We buy plots and agricultural land in every tehsil of Agra: Agra Sadar, Etmadpur, Kiraoli, Kheragarh, Fatehabad, Bah and Fatehpur Sikri." %}{% endblock %}
+{% block page_header %}{% include "partials/page_header.html" with title="Sell Land in Agra: Areas We Buy In" subtitle="Choose your area to see local sample rates, connectivity and FAQs." %}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    {% for tehsil in tehsils %}
+    {% if tehsil.localities.all %}
+    <h2 class="h4 mt-4 mb-3"><i class="bi bi-signpost-split text-terracotta"></i> {{ tehsil.name }} Tehsil</h2>
+    <div class="row g-3">
+      {% for loc in tehsil.localities.all %}
+      <div class="col-sm-6 col-lg-4">
+        <a href="{{ loc.get_absolute_url }}" class="card-soft card-hover area-card">
+          <i class="bi bi-geo-alt-fill"></i>
+          <span><strong class="d-block">Sell land in {{ loc.name }}</strong><small>{{ loc.get_locality_type_display }}</small></span>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+</section>
+{% include "partials/cta_band.html" %}
+{% endblock %}

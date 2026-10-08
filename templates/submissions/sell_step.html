@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% load static site_tags %}
+{% block body_class %}sell-page{% endblock %}
+
+{% block content %}
+<section class="page-header pb-4">
+  <div class="container" style="max-width:920px">
+    {% include "partials/breadcrumbs.html" %}
+    <h1><span class="lang-en-text">Sell Your Property to Us</span><span class="lang-hi-text">अपनी प्रॉपर्टी हमें बेचें</span></h1>
+    <p class="lead-muted mb-0">Takes about 5 minutes. Your data is saved as you go, so you can come back to any step.</p>
+  </div>
+</section>
+
+<section class="section-sm">
+  <div class="container" style="max-width:920px">
+    <div class="wizard-steps" aria-label="Form progress">
+      {% for n, label in steps %}
+      <div class="wizard-step {% if n < step %}done{% elif n == step %}current{% endif %}">
+        {% if n < step %}<a href="{% url 'submissions:sell_step' n %}" class="text-reset text-decoration-none">{% endif %}
+        <div class="dot">{% if n < step %}<i class="bi bi-check-lg"></i>{% else %}{{ n }}{% endif %}</div>
+        <span class="label">{{ label }}</span>
+        {% if n < step %}</a>{% endif %}
+      </div>
+      {% endfor %}
+    </div>
+    <div class="progress mb-4" role="progressbar" aria-valuenow="{{ progress }}" aria-valuemin="0" aria-valuemax="100" aria-label="Form completion">
+      <div class="progress-bar" style="width: {{ progress }}%"></div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="card-soft form-card wizard-form" id="sellForm" novalidate>
+      {% csrf_token %}
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="h4 mb-0">Step {{ step }}: {{ step_title }}</h2>
+        <span class="small text-muted">{{ step }} / 5</span>
+      </div>
+      {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+
+      {% if step == 1 %}
+      <div class="row">
+        {% include "partials/form_field.html" with field=form.owner_name wrapper="col-md-6 mb-3" %}
+        {% include "partials/form_field.html" with field=form.relation wrapper="col-md-6 mb-3" %}
+        {% include "partials/form_field.html" with field=form.phone wrapper="col-md-6 mb-3" %}
+        {% include "partials/form_field.html" with field=form.whatsapp wrapper="col-md-6 mb-3" %}
+        {% include "partials/form_field.html" with field=form.email wrapper="col-md-6 mb-3" %}
+      </div>
+      <p class="small text-muted"><i class="bi bi-shield-lock"></i> We will verify your mobile number with an OTP <span class="demo-pill">DEMO</span> on the next screen.</p>
+
+      {% elif step == 2 %}
+      <div class="mb-4" data-field="property_type">
+        <label class="form-label">What do you want to sell? <span class="text-terracotta">*</span></label>
+        <div class="type-radio">
+          {% for radio in form.property_type %}
+          <label for="{{ radio.id_for_label }}" class="{% if radio.data.selected %}checked{% endif %}">
+            {{ radio.tag }}
+            <i class="bi {{ type_icons|get_item:radio.data.value|default:'bi-geo-alt' }}"></i>
+            {{ radio.choice_label }}
+          </label>
+          {% endfor %}
+        </div>
+        {% for error in form.property_type.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+      </div>
+      <div class="row">
+        {% include "partials/form_field.html" with field=form.tehsil wrapper="col-md-6 mb-3" %}
+        {% include "partials/form_field.html" with field=form.locality wrapper="col-md-6 mb-3" %}
+        {% include "partials/form_field.html" with field=form.village_colony wrapper="col-md-6 mb-3" %}
+        {% include "partials/form_field.html" with field=form.khasra_number wrapper="col-md-6 mb-3" %}
+        {% include "partials/form_field.html" with field=form.landmark wrapper="col-md-6 mb-3" %}
+        {% include "partials/form_field.html" with field=form.address wrapper="col-md-6 mb-3" %}
+      </div>
+      <label class="form-label">Drop a pin on your property <span class="small text-muted fw-normal">(optional, helps our field agent)</span></label>
+      <div id="mapPicker" class="map-picker mb-2" aria-label="Map to pick property location"></div>
+      <div class="d-flex flex-wrap gap-2 align-items-center small text-muted mb-2">
+        <button type="button" class="btn btn-sm btn-light border" id="useMyLocation"><i class="bi bi-crosshair"></i> Use my current location</button>
+        <span id="pinLabel">{% if form.latitude.value %}Pin: {{ form.latitude.value }}, {{ form.longitude.value }}{% else %}Tap on the map to place a pin.{% endif %}</span>
+      </div>
+      {{ form.latitude }}{{ form.longitude }}
+      {{ locality_data|json_script:"locality-data" }}
+
+      {% elif step == 3 %}
+      <div class="row align-items-end">
+        {% include "partials/form_field.html" with field=form.area_value wrapper="col-7 col-md-4 mb-3" %}
+        {% include "partials/form_field.html" with field=form.area_unit wrapper="col-5 col-md-3 mb-3" %}
+        <div class="col-md-5 mb-3">
+          <div class="converter-box" id="unitConverter" aria-live="polite">
+            <div class="small fw-semibold mb-1"><i class="bi bi-arrow-left-right"></i> Live unit converter</div>
+            <div class="row g-1 small">
+              <div class="col-6">Sq ft: <span class="val" data-unit="sqft">—</span></div>
+              <div class="col-6">Gaj: <span class="val" data-unit="sqyard">—</span></div>
+              <div class="col-6">Sq m: <span class="val" data-unit="sqm">—</span></div>
+              <div class="col-6">Bigha: <span class="val" data-unit="bigha">—</span></div>
+              <div class="col-6">Biswa: <span class="val" data-unit="biswa">—</span></div>
+              <div class="col-6">Acre: <span class="val" data-unit="acre">—</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="small text-muted mt-n2">Bigha here = Agra pucca bigha (≈ 27,225 sq ft). Local bigha size can differ; our team confirms on site.</p>
+
+      <h3 class="h6 mt-3 mb-3 text-green">Plot details</h3>
+      <div class="row">
+        {% include "partials/form_field.html" with field=form.road_width_ft wrapper="col-6 col-md-3 mb-3" %}
+        {% include "partials/form_field.html" with field=form.frontage_ft wrapper="col-6 col-md-3 mb-3" %}
+        {% include "partials/form_field.html" with field=form.facing wrapper="col-6 col-md-3 mb-3" %}
+        {% include "partials/form_field.html" with field=form.distance_main_road_m wrapper="col-6 col-md-3 mb-3" %}
+        {% include "partials/form_field.html" with field=form.water_source wrapper="col-md-4 mb-3" %}
+        <div class="col-md-8 mb-3 d-flex flex-wrap gap-4 align-items-end">
+          {% include "partials/form_field.html" with field=form.is_corner wrapper="" %}
+          {% include "partials/form_field.html" with field=form.has_boundary_wall wrapper="" %}
+          {% include "partials/form_field.html" with field=form.has_electricity wrapper="" %}
+        </div>
+      </div>
+
+      <div id="agriSection" class="{% if not is_agri %}d-none{% endif %}">
+        <h3 class="h6 mt-2 mb-3 text-green"><i class="bi bi-flower1"></i> Agricultural details</h3>
+        <div class="row">
+          {% include "partials/form_field.html" with field=form.irrigation_source wrapper="col-md-4 mb-3" %}
+          {% include "partials/form_field.html" with field=form.soil_type wrapper="col-md-4 mb-3" %}
+          {% include "partials/form_field.html" with field=form.current_crop wrapper="col-md-4 mb-3" %}
+          {% include "partials/form_field.html" with field=form.has_tubewell wrapper="col-12 mb-3" %}
+        </div>
+      </div>
+
+      {% elif step == 4 %}
+      <div class="row">
+        {% include "partials/form_field.html" with field=form.ownership_type wrapper="col-md-6 mb-3" %}
+        {% include "partials/form_field.html" with field=form.number_of_owners wrapper="col-md-6 mb-3 js-joint-only" %}
+        {% include "partials/form_field.html" with field=form.title_documents wrapper="col-12 mb-3" %}
+        {% include "partials/form_field.html" with field=form.mutation_done wrapper="col-md-6 mb-3" %}
+        {% include "partials/form_field.html" with field=form.approval_status wrapper="col-md-6 mb-3" %}
+        <div class="col-12 mb-3 d-flex flex-wrap gap-4">
+          {% include "partials/form_field.html" with field=form.has_loan wrapper="" %}
+          {% include "partials/form_field.html" with field=form.has_dispute wrapper="" %}
+        </div>
+        {% include "partials/form_field.html" with field=form.encumbrance_details wrapper="col-12 mb-3 js-encumbrance" %}
+      </div>
+      <div class="disclaimer"><i class="bi bi-info-circle"></i> Not sure about any legal detail? Choose "Not sure". Our legal team will check it for free.</div>
+
+      {% elif step == 5 %}
+      <div class="row">
+        <div class="col-md-6 mb-3" data-field="expected_price">
+          <label class="form-label" for="{{ form.expected_price.id_for_label }}">{{ form.expected_price.label }} <span class="text-terracotta">*</span></label>
+          {{ form.expected_price }}
+          <div class="form-text fw-semibold text-green" id="priceWords"></div>
+          {% for error in form.expected_price.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+        {% include "partials/form_field.html" with field=form.urgency wrapper="col-md-6 mb-3" %}
+        {% include "partials/form_field.html" with field=form.preferred_visit_time wrapper="col-md-6 mb-3" %}
+        <div class="col-md-6 mb-3 d-flex align-items-end">{% include "partials/form_field.html" with field=form.price_negotiable wrapper="" %}</div>
+        {% include "partials/form_field.html" with field=form.reason_for_selling wrapper="col-12 mb-3" %}
+      </div>
+
+      <label class="form-label">Property photos <span class="small text-muted fw-normal">(JPG/PNG/WebP, max 5 MB each, up to 10)</span></label>
+      <div class="dropzone mb-1" id="photoDrop" tabindex="0" role="button" aria-label="Upload photos">
+        <i class="bi bi-cloud-arrow-up"></i>
+        <p class="mb-0 fw-semibold">Drag &amp; drop photos here or tap to choose</p>
+        <p class="small text-muted mb-0">Front view, road, boundary and surroundings help us give a better offer.</p>
+      </div>
+      {{ form.photos }}
+      <div class="preview-grid" id="photoPreview"></div>
+      {% for error in form.photos.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+
+      <div class="row mt-4">
+        {% include "partials/form_field.html" with field=form.document_type wrapper="col-md-5 mb-3" %}
+        <div class="col-md-7 mb-3" data-field="documents">
+          <label class="form-label" for="{{ form.documents.id_for_label }}">Documents <span class="small text-muted fw-normal">(PDF/JPG, max 10 MB)</span></label>
+          {{ form.documents }}
+          <div class="form-text"><i class="bi bi-lock-fill"></i> Visible only to our company team. Never shown publicly.</div>
+          {% for error in form.documents.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+        </div>
+      </div>
+      {% include "partials/form_field.html" with field=form.consent wrapper="mb-2" %}
+      {% endif %}
+
+      <hr class="my-4">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>
+          {% if step > 1 %}<a href="{% url 'submissions:sell_step' step|add:'-1' %}" class="btn btn-light border"><i class="bi bi-arrow-left"></i> Back</a>{% endif %}
+          <a href="{% url 'submissions:sell_restart' %}" class="btn btn-link text-muted small">Start over</a>
+        </div>
+        <button type="submit" class="btn btn-accent btn-lg" id="nextBtn">
+          {% if step == 5 %}<i class="bi bi-send-check"></i> Submit Property{% else %}Next: {% for n, label in steps %}{% if n == step|add:'1' %}{{ label }}{% endif %}{% endfor %} <i class="bi bi-arrow-right"></i>{% endif %}
+        </button>
+      </div>
+    </form>
+    <p class="text-center small text-muted mt-3"><i class="bi bi-telephone"></i> Prefer to talk? Call <a href="tel:+{{ SITE_PHONE_RAW }}">{{ SITE_PHONE }}</a> or <a href="https://wa.me/{{ SITE_WHATSAPP }}" target="_blank" rel="noopener">WhatsApp us</a>.</p>
+  </div>
+</section>
+{{ unit_factors|json_script:"unit-factors" }}
+{{ agri_types|json_script:"agri-types" }}
+{% endblock %}
+
+{% block extra_js %}<script src="{% asset 'js/sell_form.js' %}" defer></script>{% endblock %}

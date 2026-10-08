@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load site_tags %}
+{% block seo %}{% include "partials/seo.html" with page_title=submission.reference_id %}{% endblock %}
+{% block robots %}noindex{% endblock %}
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    <nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'submissions:owner_dashboard' %}">My properties</a></li><li class="breadcrumb-item active">{{ submission.reference_id }}</li></ol></nav>
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-2">
+      <div>
+        <h1 class="mb-1">{{ submission.title }}</h1>
+        <p class="lead-muted mb-0">{{ submission.reference_id }} · {{ submission.area_display }} · Submitted {{ submission.created_at|date:"d M Y" }}</p>
+      </div>
+      {% status_badge submission.status %}
+    </div>
+  </div>
+</section>
+
+<section class="section-sm">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-7">
+        {% if next_visit %}
+        <div class="alert alert-info"><i class="bi bi-calendar-event"></i> Site visit scheduled on <strong>{{ next_visit.scheduled_for|date:"l, d M Y h:i A" }}</strong>{% if next_visit.agent %} by {{ next_visit.agent.display_name }}{% endif %}.</div>
+        {% endif %}
+
+        <div class="card-soft p-4 mb-4" id="offers">
+          <h2 class="h5 mb-3"><i class="bi bi-cash-stack text-terracotta"></i> Offers from {{ SITE_NAME }}</h2>
+          {% for offer in offers %}
+          <div class="border rounded-3 p-3 mb-3 {% if offer.is_open %}border-warning bg-warning-subtle{% endif %}">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+              <div>
+                <div class="h4 mb-0 font-head">{{ offer.amount|inr_short }}</div>
+                <div class="small text-muted">{{ offer.amount|inr }} · valid till {{ offer.valid_till|date:"d M Y" }}</div>
+              </div>
+              <span class="badge text-bg-{{ offer.status_css }}">{{ offer.get_status_display }}</span>
+            </div>
+            {% if offer.terms %}<p class="small mt-2 mb-0"><strong>Terms:</strong> {{ offer.terms }}</p>{% endif %}
+            {% if offer.owner_counter_amount %}<p class="small mt-1 mb-0"><strong>Your counter:</strong> {{ offer.owner_counter_amount|inr_short }}</p>{% endif %}
+            {% if offer.is_open %}
+            <form method="post" action="{% url 'submissions:offer_respond' offer.pk %}" class="mt-3 offer-response-form">
+              {% csrf_token %}
+              <div class="d-flex flex-wrap gap-2 mb-2">
+                <button name="action" value="accept" class="btn btn-primary" onclick="return confirm('Accept this offer of {{ offer.amount|inr_short }}?')"><i class="bi bi-check-lg"></i> Accept</button>
+                <button name="action" value="reject" class="btn btn-outline-danger" onclick="return confirm('Reject this offer?')"><i class="bi bi-x-lg"></i> Reject</button>
+                <button type="button" class="btn btn-gold" data-bs-toggle="collapse" data-bs-target="#counter{{ offer.pk }}"><i class="bi bi-arrow-left-right"></i> Counter</button>
+              </div>
+              <div class="collapse" id="counter{{ offer.pk }}">
+                <div class="row g-2">
+                  <div class="col-sm-5"><input type="number" name="counter_amount" class="form-control" placeholder="Your price in ₹" min="1" data-price-input></div>
+                  <div class="col-sm-7"><input type="text" name="note" class="form-control" placeholder="Note (optional)"></div>
+                </div>
+                <button name="action" value="counter" class="btn btn-accent btn-sm mt-2">Send counter offer</button>
+              </div>
+            </form>
+            {% endif %}
+          </div>
+          {% empty %}
+          <p class="text-muted mb-0">No offer yet. Our team will share an offer after evaluation and legal check.</p>
+          {% endfor %}
+        </div>
+
+        <div class="card-soft p-4 mb-4">
+          <h2 class="h5 mb-3">Property details</h2>
+          <table class="table spec-table small mb-0">
+            <tr><th>Type</th><td>{{ submission.get_property_type_display }}</td></tr>
+            <tr><th>Location</th><td>{{ submission.village_colony|default:"" }} {{ submission.locality|default:"" }}{% if submission.tehsil %}, {{ submission.tehsil }} tehsil{% endif %}</td></tr>
+            <tr><th>Area</th><td>{{ submission.area_display }}{% if submission.area_sq_meter %} ({{ submission.area_sq_meter|indian_number }} sq m){% endif %}</td></tr>
+            <tr><th>Expected price</th><td>{{ submission.expected_price|inr }}</td></tr>
+            <tr><th>Title documents</th><td>{{ submission.title_documents_display }}</td></tr>
+            <tr><th>Mutation done</th><td>{{ submission.get_mutation_done_display }}</td></tr>
+            <tr><th>Urgency</th><td>{{ submission.get_urgency_display }}</td></tr>
+          </table>
+        </div>
+
+        <div class="card-soft p-4">
+          <h2 class="h5 mb-3">Photos &amp; documents</h2>
+          <div class="preview-grid mb-3">
+            {% for p in submission.photos.all %}<div class="item"><img src="{{ p.image.url }}" alt="Property photo {{ forloop.counter }}" loading="lazy"></div>{% empty %}<p class="small text-muted">No photos yet.</p>{% endfor %}
+          </div>
+          <ul class="list-unstyled small">
+            {% for d in submission.documents.all %}<li class="mb-1"><i class="bi bi-file-earmark-lock text-terracotta"></i> <a href="{% url 'submissions:document_download' d.pk %}">{{ d.get_doc_type_display }} - {{ d.filename }}</a> <span class="text-muted">(private)</span></li>{% empty %}<li class="text-muted">No documents uploaded.</li>{% endfor %}
+          </ul>
+          <form method="post" enctype="multipart/form-data" action="{% url 'submissions:owner_upload' submission.reference_id %}" class="border-top pt-3">
+            {% csrf_token %}
+            <div class="row g-2">
+              <div class="col-md-6"><label class="form-label small">Add photos</label>{{ upload_form.photos }}</div>
+              <div class="col-md-6"><label class="form-label small">Document type</label>{{ upload_form.document_type }}</div>
+              <div class="col-12"><label class="form-label small">Add documents (PDF/JPG)</label>{{ upload_form.documents }}</div>
+            </div>
+            <button class="btn btn-outline-green btn-sm mt-2"><i class="bi bi-upload"></i> Upload</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="col-lg-5">
+        <div class="card-soft p-4 position-sticky" style="top:90px">
+          <h2 class="h5 mb-3">Status timeline</h2>
+          {% include "submissions/_timeline.html" %}
+          <a href="https://wa.me/{{ SITE_WHATSAPP }}?text={{ 'Query about '|add:submission.reference_id|urlencode }}" class="btn btn-whatsapp w-100 mt-2" target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i> Talk to your relationship manager</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

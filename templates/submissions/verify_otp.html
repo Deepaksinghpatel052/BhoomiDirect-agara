@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block seo %}{% include "partials/seo.html" with page_title="Verify Mobile Number" %}{% endblock %}
+{% block robots %}noindex{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:520px">
+    <div class="card-soft form-card text-center">
+      <span class="icon-circle terracotta mb-3"><i class="bi bi-phone-vibrate"></i></span>
+      <h1 class="h3">Verify your mobile number</h1>
+      <p class="text-muted">We sent a 4 digit OTP to <strong>+91 {{ phone }}</strong>.</p>
+      <p><span class="demo-pill">DEMO MODE</span> <span class="small text-muted">The OTP is shown in the message above instead of SMS.</span></p>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.otp }}
+        {% for error in form.otp.errors %}<div class="text-danger small mt-2">{{ error }}</div>{% endfor %}
+        <button class="btn btn-accent btn-lg w-100 mt-3">Verify &amp; continue</button>
+      </form>
+      <div class="d-flex justify-content-between mt-3 small">
+        <a href="{% url 'submissions:sell_step' 1 %}"><i class="bi bi-pencil"></i> Change number</a>
+        <a href="?resend=1"><i class="bi bi-arrow-repeat"></i> Resend OTP</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

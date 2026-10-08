@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load site_tags %}
+{% block seo %}{% with cover=listing.cover %}{% if cover %}{% include "partials/seo.html" with seo_title=listing.seo_title seo_description=listing.seo_description og_type="product" seo_image=SITE_DOMAIN|add:cover.image.url %}{% else %}{% include "partials/seo.html" with seo_title=listing.seo_title seo_description=listing.seo_description og_type="product" %}{% endif %}{% endwith %}{% endblock %}
+{% block content %}
+<section class="section-sm">
+  <div class="container">
+    {% include "partials/breadcrumbs.html" %}
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="gallery-main mb-2">
+          {% with first=photos.0 %}{% if first %}<img src="{{ first.image.url }}" id="galleryMain" alt="{{ first.alt_text|default:listing.title }}" width="960" height="600">{% endif %}{% endwith %}
+        </div>
+        <div class="gallery-thumbs d-flex gap-2 flex-wrap mb-4">
+          {% for p in photos %}<img src="{{ p.image.url }}" alt="{{ p.alt_text|default:listing.title }}" loading="lazy" class="{% if forloop.first %}active{% endif %}" data-full="{{ p.image.url }}">{% endfor %}
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mb-2">
+          <span class="badge bg-{{ listing.status_css }}">{{ listing.get_status_display }}</span>
+          <span class="chip"><i class="bi bi-tag"></i> {{ listing.get_property_type_display }}</span>
+          <span class="chip"><i class="bi bi-patch-check"></i> Title verified</span>
+        </div>
+        <h1 class="h2">{{ listing.title }}</h1>
+        <p class="text-muted"><i class="bi bi-geo-alt"></i> {{ listing.locality.name }}, {{ listing.locality.tehsil.name }} Tehsil, Agra</p>
+        <div class="post-content mb-4"><p>{{ listing.description|linebreaksbr }}</p></div>
+
+        <h2 class="h5">Key specifications</h2>
+        <table class="table spec-table bg-white">
+          <tr><th>Price</th><td><strong>{{ listing.price|inr }}</strong> ({{ listing.price|inr_short }})</td></tr>
+          <tr><th>Area</th><td>{{ listing.area_display }}</td></tr>
+          {% with u=listing.area_in_units %}
+          <tr><th>Area in other units</th><td>{{ u.sqft|indian_number }} sq ft · {{ u.sqyard|indian_number }} gaj · {{ u.bigha }} bigha · {{ u.acre }} acre</td></tr>
+          {% endwith %}
+          {% if listing.price_per_sqyard %}<tr><th>Price per gaj</th><td>{{ listing.price_per_sqyard|inr }}</td></tr>{% endif %}
+          {% if listing.road_width_ft %}<tr><th>Road width</th><td>{{ listing.road_width_ft }} ft</td></tr>{% endif %}
+          {% if listing.facing %}<tr><th>Facing</th><td>{{ listing.facing }}</td></tr>{% endif %}
+          <tr><th>Locality type</th><td>{{ listing.locality.get_locality_type_display }}</td></tr>
+        </table>
+
+        {% if listing.feature_list %}
+        <h2 class="h5 mt-4">Features</h2>
+        <ul class="row list-unstyled">{% for f in listing.feature_list %}<li class="col-sm-6 mb-1"><i class="bi bi-check2-circle text-green"></i> {{ f }}</li>{% endfor %}</ul>
+        {% endif %}
+
+        <h2 class="h5 mt-4">Location</h2>
+        <div class="map-box sm mb-3" data-map='{"lat": {{ listing.latitude|default:listing.locality.latitude }}, "lng": {{ listing.longitude|default:listing.locality.longitude }}, "zoom": 14, "label": "{{ listing.locality.name }}"}' role="region" aria-label="Property location map"></div>
+        {% if listing.locality.landmark_list %}
+        <h2 class="h6">Nearby landmarks</h2>
+        <ul class="list-unstyled small">{% for l in listing.locality.landmark_list %}<li><i class="bi bi-pin-map text-terracotta"></i> {{ l }}</li>{% endfor %}</ul>
+        {% endif %}
+      </div>
+
+      <aside class="col-lg-4">
+        <div class="card-soft p-4 position-sticky" style="top:90px">
+          <div class="h3 font-head text-green mb-0">{{ listing.price|inr_short }}</div>
+          <div class="small text-muted mb-3">{{ listing.price|inr }} · Direct from owner company</div>
+          <div class="d-flex gap-2 mb-3">
+            <a href="tel:+{{ SITE_PHONE_RAW }}" class="btn btn-outline-green flex-fill"><i class="bi bi-telephone"></i> Call</a>
+            <a href="https://wa.me/{{ SITE_WHATSAPP }}?text={{ 'I am interested in '|add:listing.title|urlencode }}" target="_blank" rel="noopener" class="btn btn-whatsapp flex-fill"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+          </div>
+          {% if listing.status != 'sold' %}
+          <h2 class="h6">Send an inquiry</h2>
+          <form method="post" action="{% url 'listings:inquiry' listing.slug %}" id="inquiryForm" novalidate>
+            {% csrf_token %}
+            {% for field in form %}{% include "partials/form_field.html" with field=field %}{% endfor %}
+            <button class="btn btn-accent w-100">Request call back</button>
+          </form>
+          {% else %}
+          <div class="alert alert-secondary mb-0">This property is sold. <a href="{% url 'listings:list' %}">See available properties</a>.</div>
+          {% endif %}
+        </div>
+      </aside>
+    </div>
+
+    {% if similar %}
+    <h2 class="h4 mt-5 mb-3">Similar properties</h2>
+    <div class="row g-4">{% for listing in similar %}<div class="col-md-4">{% include "partials/property_card.html" %}</div>{% endfor %}</div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  $(".gallery-thumbs img").on("click", function () {
+    $(".gallery-thumbs img").removeClass("active");
+    $(this).addClass("active");
+    const src = $(this).data("full");
+    $("#galleryMain").fadeOut(120, function () { $(this).attr("src", src).fadeIn(160); });
+  });
+  $("#inquiryForm").on("submit", function (e) {
+    if (e.isDefaultPrevented()) return;
+    e.preventDefault();
+    const $f = $(this), $btn = $f.find("button[type=submit], button").last();
+    $btn.prop("disabled", true);
+    $.post($f.attr("action"), $f.serialize())
+      .done(function (res) {
+        showToast(res.message, "success");
+        $f[0].reset();
+      })
+      .fail(function (xhr) {
+        const errors = (xhr.responseJSON && xhr.responseJSON.errors) || {};
+        const first = Object.keys(errors)[0];
+        showToast(first ? first + ": " + errors[first][0] : "Please check the form.", "danger");
+      })
+      .always(function () { $btn.prop("disabled", false); });
+  });
+});
+</script>
+{% endblock %}

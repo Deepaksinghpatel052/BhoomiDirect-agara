@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% load site_tags %}
+{% block seo %}{% include "partials/seo.html" with seo_title=locality.seo_title seo_description=locality.seo_description %}{% endblock %}
+{% block content %}
+<section class="page-header">
+  <div class="container">
+    {% include "partials/breadcrumbs.html" %}
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-7">
+        <span class="eyebrow">{{ locality.get_locality_type_display }} · {{ locality.tehsil.name }} Tehsil</span>
+        <h1>Sell Your Land or Plot in {{ locality.name }}, Agra</h1>
+        <p class="lead-muted">{{ locality.description|truncatewords:45 }}</p>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="#lead" class="btn btn-accent btn-lg">Get an offer for my {{ locality.name }} property</a>
+          <a href="{% url 'locations:estimator' %}?locality={{ locality.pk }}" class="btn btn-outline-green btn-lg">Estimate price</a>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="map-box sm" data-map='{"lat": {{ locality.latitude }}, "lng": {{ locality.longitude }}, "zoom": 13, "label": "{{ locality.name }}"}' role="region" aria-label="Map of {{ locality.name }}"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <h2 class="h3">About {{ locality.name }} for land sellers</h2>
+        <p>{{ locality.description }}</p>
+
+        {% if locality.connectivity_list %}
+        <h2 class="h4 mt-4">Connectivity</h2>
+        <ul class="list-unstyled">
+          {% for c in locality.connectivity_list %}<li class="mb-1"><i class="bi bi-signpost text-green"></i> {{ c }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if rates %}
+        <h2 class="h4 mt-4">Sample circle rates in {{ locality.name }} <span class="sample-tag">Sample</span></h2>
+        <div class="table-responsive">
+          <table class="table bg-white rounded-xl overflow-hidden">
+            <thead class="table-light"><tr><th>Category</th><th>Rate per sq m</th><th>Rate per gaj</th><th>Year</th></tr></thead>
+            <tbody>
+              {% for r in rates %}
+              <tr><td>{{ r.get_property_type_display }}</td><td>{{ r.rate_per_sq_meter|inr }}</td><td>{{ r.rate_per_sq_yard|inr }}</td><td>{{ r.effective_year }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <p class="disclaimer"><i class="bi bi-exclamation-triangle"></i> Sample rates for demo, not official. Check the latest DM circle rate list of Agra for actual values.</p>
+        {% endif %}
+
+        {% if faqs %}
+        <h2 class="h4 mt-4 mb-3">Selling land in {{ locality.name }}: FAQs</h2>
+        {% include "partials/faq_accordion.html" with faqs=faqs accordion_id="locFaq" %}
+        {% endif %}
+
+        {% if listings %}
+        <h2 class="h4 mt-5 mb-3">Properties available in {{ locality.name }}</h2>
+        <div class="row g-3">
+          {% for listing in listings %}<div class="col-md-6">{% include "partials/property_card.html" %}</div>{% endfor %}
+        </div>
+        {% endif %}
+      </div>
+
+      <aside class="col-lg-4">
+        <div class="card-soft p-4 position-sticky" style="top:90px" id="lead">
+          <h2 class="h5">Sell your property in {{ locality.name }}</h2>
+          <p class="small text-muted">Get a call back within 24 hours.</p>
+          <form method="post" action="{% url 'submissions:quick_lead' %}" novalidate>
+            {% csrf_token %}
+            {% for field in quick_form %}{% include "partials/form_field.html" with field=field %}{% endfor %}
+            <button class="btn btn-accent w-100">Get my offer</button>
+          </form>
+          {% if locality.landmark_list %}
+          <h3 class="h6 mt-4">Nearby landmarks</h3>
+          <ul class="small list-unstyled mb-0">{% for l in locality.landmark_list %}<li><i class="bi bi-pin-map text-terracotta"></i> {{ l }}</li>{% endfor %}</ul>
+          {% endif %}
+        </div>
+        {% if nearby %}
+        <div class="card-soft p-4 mt-4">
+          <h3 class="h6">Other areas in {{ locality.tehsil.name }}</h3>
+          <ul class="list-unstyled small mb-0">{% for n in nearby %}<li class="mb-1"><a href="{{ n.get_absolute_url }}">Sell land in {{ n.name }}</a></li>{% endfor %}</ul>
+        </div>
+        {% endif %}
+      </aside>
+    </div>
+  </div>
+</section>
+{% include "partials/cta_band.html" %}
+{% endblock %}

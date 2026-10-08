@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block page_header %}{% include "partials/page_header.html" with title="Privacy Policy" subtitle="Demo policy text. Have this reviewed by a lawyer before going live." %}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container post-content" style="max-width:860px">
+    <h2>What we collect</h2>
+    <p>When you submit a property we collect your name, mobile number, WhatsApp number, email, property location, size, legal details, photos and documents.</p>
+    <h2>How we use it</h2>
+    <ul>
+      <li>To evaluate your property and contact you about an offer.</li>
+      <li>To verify title documents with our legal team.</li>
+      <li>To send you status updates about your submission.</li>
+    </ul>
+    <h2>Who can see your documents</h2>
+    <p>Title documents and ID proofs are stored privately and can only be opened by our internal team and you. They are never shown on public listings or shared with brokers.</p>
+    <h2>Your choices</h2>
+    <p>You can withdraw your submission at any time by calling us or writing to {{ SITE_EMAIL }}. We will delete your documents on request.</p>
+    <h2>Contact</h2>
+    <p>{{ SITE_NAME }}, {{ SITE_ADDRESS }}. Email: {{ SITE_EMAIL }}</p>
+  </div>
+</section>
+{% endblock %}

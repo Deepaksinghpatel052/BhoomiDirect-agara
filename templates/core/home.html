@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% load static site_tags %}
+
+{% block content %}
+<!-- HERO -->
+<section class="hero hero-photo" style="--hero-img: url('{% static 'img/photos/hero-02.jpg' %}')">
+  <div class="container position-relative" style="z-index:2">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-7">
+        <span class="eyebrow"><i class="bi bi-patch-check-fill"></i> Agra's direct land buyer</span>
+        <h1 class="mb-3">
+          <span class="lang-en-text">Sell Your Plot, Land or Farm in Agra <span class="accent">Directly to Us</span></span>
+          <span class="lang-hi-text">अपना प्लॉट, ज़मीन या खेत आगरा में <span class="accent">सीधे हमें बेचें</span></span>
+        </h1>
+        <p class="hero-sub mb-4">
+          <span class="lang-en-text">Free evaluation, a fair written offer within 7 days of site visit, and full payment at registry. No brokers. No commission. No endless buyer visits.</span>
+          <span class="lang-hi-text">मुफ़्त मूल्यांकन, साइट विज़िट के 7 दिन में लिखित ऑफ़र, और रजिस्ट्री पर पूरा भुगतान। कोई ब्रोकर नहीं, कोई कमीशन नहीं।</span>
+        </p>
+        <div class="d-flex flex-wrap gap-3 mb-4">
+          <a href="{% url 'submissions:sell' %}" class="btn btn-accent btn-lg"><i class="bi bi-house-up"></i>
+            <span class="lang-en-text">Submit Your Property</span><span class="lang-hi-text">अपनी प्रॉपर्टी जमा करें</span></a>
+          <a href="{% url 'locations:estimator' %}" class="btn btn-outline-green btn-lg"><i class="bi bi-calculator"></i>
+            <span class="lang-en-text">Get Instant Price Estimate</span><span class="lang-hi-text">तुरंत कीमत जानें</span></a>
+        </div>
+        <div class="hero-badges">
+          <span><i class="bi bi-cash-coin"></i> 0% brokerage</span>
+          <span><i class="bi bi-shield-check"></i> Free legal check</span>
+          <span><i class="bi bi-lightning-charge"></i> Payment at registry</span>
+          <span><i class="bi bi-geo"></i> All 7 Agra tehsils</span>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="hero-card" id="quick-lead">
+          <h2 class="mb-1"><span class="lang-en-text">Get a call back in 24 hours</span><span class="lang-hi-text">24 घंटे में कॉल पाएं</span></h2>
+          <p class="text-muted small mb-3">Tell us 4 things. We will call you and complete the rest.</p>
+          <form method="post" action="{% url 'submissions:quick_lead' %}" novalidate>
+            {% csrf_token %}
+            {% for field in quick_form %}{% include "partials/form_field.html" with field=field %}{% endfor %}
+            <button type="submit" class="btn btn-accent w-100 btn-lg"><span class="lang-en-text">Sell My Property</span><span class="lang-hi-text">मेरी प्रॉपर्टी बेचें</span> <i class="bi bi-arrow-right"></i></button>
+            <p class="small text-muted text-center mt-2 mb-0"><i class="bi bi-lock"></i> Your number is never shared with brokers.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section class="container">
+  <div class="stat-band">
+    <div class="row text-center g-3">
+      <div class="col-6 col-md-3"><div class="stat-num"><span data-count="{{ stats.properties_acquired }}">0</span>+</div><div class="stat-label">Properties acquired</div></div>
+      <div class="col-6 col-md-3"><div class="stat-num"><span data-count="{{ stats.acres_evaluated }}">0</span>+</div><div class="stat-label">Acres evaluated</div></div>
+      <div class="col-6 col-md-3"><div class="stat-num">₹<span data-count="{{ stats.payout_crore }}">0</span> Cr</div><div class="stat-label">Paid to owners</div></div>
+      <div class="col-6 col-md-3"><div class="stat-num"><span data-count="{{ stats.avg_days_to_close }}">0</span> days</div><div class="stat-label">Average time to close</div></div>
+    </div>
+    <p class="text-center small mb-0 mt-3" style="color:#cfe2d6">Demo figures for presentation.</p>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="eyebrow">How it works</span>
+      <h2 class="section-title">From submission to payment in 5 simple steps</h2>
+      <p class="lead-muted">Transparent at every stage. Track your property status online any time.</p>
+    </div>
+    <div class="row g-4 steps-row">
+      {% include "core/_steps.html" %}
+    </div>
+  </div>
+</section>
+
+<!-- WHY US -->
+<section class="section bg-beige">
+  <div class="container">
+    <div class="row align-items-center g-5">
+      <div class="col-lg-5">
+        <figure class="photo-stack mb-0">
+          <img src="{% static 'img/photos/hero-01.jpg' %}" alt="Open agricultural land with trees near Agra" class="main rounded-xl" loading="lazy" width="1200" height="800">
+          <img src="{% static 'img/photos/agri-03.jpg' %}" alt="Wheat crop in an Uttar Pradesh field" class="inset rounded-xl" loading="lazy" width="1200" height="800">
+          <figcaption class="badge-float"><i class="bi bi-patch-check-fill text-green"></i> Bought directly from owners</figcaption>
+        </figure>
+      </div>
+      <div class="col-lg-7">
+        <span class="eyebrow">Why sell to us</span>
+        <h2 class="section-title">Owners choose us because we are the buyer</h2>
+        <p class="lead-muted mb-4">We don't list your land and wait. We buy it ourselves, so you deal with one serious party.</p>
+        <div class="row g-3">
+          <div class="col-sm-6 d-flex gap-3"><span class="icon-circle"><i class="bi bi-percent"></i></span><div><h3 class="h6 mb-1">No broker commission</h3><p class="small text-muted mb-0">Save 1-2% that usually goes to middlemen.</p></div></div>
+          <div class="col-sm-6 d-flex gap-3"><span class="icon-circle terracotta"><i class="bi bi-file-earmark-check"></i></span><div><h3 class="h6 mb-1">Free legal help</h3><p class="small text-muted mb-0">Our lawyers check registry, khatauni and mutation.</p></div></div>
+          <div class="col-sm-6 d-flex gap-3"><span class="icon-circle gold"><i class="bi bi-lightning-charge"></i></span><div><h3 class="h6 mb-1">Fast payment</h3><p class="small text-muted mb-0">Full payment by RTGS at registry. No instalments.</p></div></div>
+          <div class="col-sm-6 d-flex gap-3"><span class="icon-circle"><i class="bi bi-bar-chart"></i></span><div><h3 class="h6 mb-1">Transparent valuation</h3><p class="small text-muted mb-0">See circle rate, demand and our offer logic.</p></div></div>
+          <div class="col-sm-6 d-flex gap-3"><span class="icon-circle terracotta"><i class="bi bi-folder-check"></i></span><div><h3 class="h6 mb-1">We handle paperwork</h3><p class="small text-muted mb-0">Stamp, registry slot, dakhil kharij guidance.</p></div></div>
+          <div class="col-sm-6 d-flex gap-3"><span class="icon-circle gold"><i class="bi bi-phone"></i></span><div><h3 class="h6 mb-1">Track online</h3><p class="small text-muted mb-0">Every step visible with your reference ID.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROPERTY TYPES -->
+<section class="section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="eyebrow">What we buy</span>
+      <h2 class="section-title">Property types we buy in Agra</h2>
+    </div>
+    <div class="row g-4">
+      {% for t in property_types %}
+      <div class="col-sm-6 col-lg-4">
+        <a href="{{ t.url }}" class="card-soft card-hover type-card">
+          <span class="icon-circle {% cycle '' 'terracotta' 'gold' %}"><i class="bi {{ t.icon }}"></i></span>
+          <h3>{{ t.label }}</h3>
+          <p class="text-muted small mb-2">{{ t.desc }}</p>
+          <span class="small fw-semibold text-green">Sell {{ t.label|lower }} <i class="bi bi-arrow-right"></i></span>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- AREAS + MAP -->
+<section class="section bg-beige">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-end mb-4 gap-2">
+      <div>
+        <span class="eyebrow">Areas we buy in</span>
+        <h2 class="section-title mb-0">From Fatehabad Road to Fatehpur Sikri</h2>
+      </div>
+      <a href="{% url 'locations:area_index' %}" class="btn btn-outline-green">All areas <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-5">
+        <div class="row g-3">
+          {% for loc in featured_localities %}
+          <div class="col-sm-6 col-lg-12 col-xl-6">
+            <a href="{{ loc.get_absolute_url }}" class="card-soft card-hover area-card">
+              <i class="bi bi-geo-alt-fill"></i>
+              <span><strong class="d-block">{{ loc.name }}</strong><small>{{ loc.get_locality_type_display }} · {{ loc.tehsil.name }}</small></span>
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="col-lg-7">
+        <div class="map-box" data-map='{"lat": 27.18, "lng": 78.01, "zoom": 10}' data-points-id="map-points" role="region" aria-label="Map of areas we buy in"></div>
+        {{ map_points|json_script:"map-points" }}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECENTLY ACQUIRED -->
+{% if recent_acquisitions %}
+<section class="section">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="eyebrow">Proof, not promises</span>
+      <h2 class="section-title">Recently acquired from owners</h2>
+    </div>
+    <div class="row g-4">
+      {% for acq in recent_acquisitions %}
+      {% with s=acq.submission %}
+      <div class="col-sm-6 col-lg-3">
+        <div class="card-soft h-100 overflow-hidden">
+          {% with photo=s.cover_photo %}{% if photo %}<img src="{{ photo.image.url }}" alt="{{ s.title }}" class="w-100 object-cover" style="aspect-ratio:16/10" loading="lazy">{% endif %}{% endwith %}
+          <div class="p-3">
+            <span class="status-badge status-acquired mb-2">Acquired</span>
+            <h3 class="h6 mb-1">{{ s.title }}</h3>
+            <p class="small text-muted mb-1">{{ s.area_display }}</p>
+            <p class="small mb-0"><i class="bi bi-calendar-check text-green"></i> Closed {{ acq.purchase_date|date:"M Y" }}</p>
+          </div>
+        </div>
+      </div>
+      {% endwith %}
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- TESTIMONIALS -->
+{% if testimonials %}
+<section class="section bg-green-light">
+  <div class="container">
+    <div class="text-center mb-5">
+      <span class="eyebrow">Owner stories</span>
+      <h2 class="section-title">What land owners in Agra say</h2>
+    </div>
+    <div class="row g-4">
+      {% for t in testimonials %}
+      <div class="col-md-6 col-lg-4">
+        <figure class="card-soft testimonial mb-0">
+          <div class="stars">{% for i in "12345"|make_list %}{% if forloop.counter <= t.rating %}<i class="bi bi-star-fill"></i>{% endif %}{% endfor %}</div>
+          <blockquote>“{{ t.quote }}”</blockquote>
+          <figcaption class="d-flex align-items-center gap-2">
+            <span class="avatar">{{ t.name|slice:":1" }}</span>
+            <span><strong class="d-block">{{ t.name }}</strong><small class="text-muted">{{ t.property_sold }}, {{ t.location }}</small></span>
+          </figcaption>
+        </figure>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- FAQ -->
+{% if faqs %}
+<section class="section">
+  <div class="container" style="max-width:860px">
+    <div class="text-center mb-4">
+      <span class="eyebrow">FAQ</span>
+      <h2 class="section-title">Questions owners ask us</h2>
+    </div>
+    {% include "partials/faq_accordion.html" with faqs=faqs accordion_id="homeFaq" %}
+    <p class="text-center mt-3"><a href="{% url 'core:faq' %}">See all FAQs <i class="bi bi-arrow-right"></i></a></p>
+  </div>
+</section>
+{% endif %}
+
+{% include "partials/cta_band.html" %}
+{% endblock %}

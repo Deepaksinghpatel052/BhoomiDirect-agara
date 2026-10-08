@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block seo %}{% include "partials/seo.html" with seo_title="FAQ: Selling Land in Agra Directly | BhoomiDirect Agra" seo_description="Answers on selling plots and agricultural land in Agra: documents, valuation, payment, registry and legal questions." %}{% endblock %}
+{% block page_header %}{% include "partials/page_header.html" with title="Frequently Asked Questions" subtitle="Everything owners ask before selling their land to us." %}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:900px">
+    {% for category, items in grouped_faqs.items %}
+    <h2 class="h4 mt-4 mb-3">{{ category }}</h2>
+    {% include "partials/faq_accordion.html" with faqs=items accordion_id="faq"|add:category|slugify %}
+    {% empty %}
+    <p class="text-muted">No FAQs yet.</p>
+    {% endfor %}
+  </div>
+</section>
+{% include "partials/cta_band.html" %}
+{% endblock %}

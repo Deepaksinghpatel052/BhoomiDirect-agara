@@ -1,0 +1,58 @@
+{% extends "dashboard/base.html" %}
+{% load site_tags %}
+{% block dash_title %}Overview{% endblock %}
+{% block page_title %}Overview{% endblock %}
+{% block dash_content %}
+<div class="row g-3 mb-4">
+  <div class="col-6 col-xl-2"><div class="kpi"><div class="d-flex justify-content-between"><span class="kpi-label">New leads today</span><i class="bi bi-inbox text-primary"></i></div><div class="kpi-value">{{ kpis.new_today }}</div><div class="small text-muted">{{ kpis.new_week }} this week</div></div></div>
+  <div class="col-6 col-xl-2"><div class="kpi"><div class="d-flex justify-content-between"><span class="kpi-label">Under evaluation</span><i class="bi bi-clipboard-data" style="color:#5d33a6"></i></div><div class="kpi-value">{{ kpis.under_evaluation }}</div><div class="small text-muted">incl. legal check</div></div></div>
+  <div class="col-6 col-xl-2"><div class="kpi"><div class="d-flex justify-content-between"><span class="kpi-label">Offers pending</span><i class="bi bi-hourglass-split text-terracotta"></i></div><div class="kpi-value">{{ kpis.offers_pending }}</div><div class="small text-muted">awaiting owner</div></div></div>
+  <div class="col-6 col-xl-2"><div class="kpi"><div class="d-flex justify-content-between"><span class="kpi-label">Acquired (month)</span><i class="bi bi-bank text-green"></i></div><div class="kpi-value">{{ kpis.acquired_month }}</div><div class="small text-muted">{{ kpis.acquired_total }} total</div></div></div>
+  <div class="col-6 col-xl-2"><div class="kpi"><div class="d-flex justify-content-between"><span class="kpi-label">Inventory value</span><i class="bi bi-house-check text-gold"></i></div><div class="kpi-value" style="font-size:1.3rem">{{ kpis.inventory_value|inr_short }}</div><div class="small text-muted">{{ kpis.inventory_count }} listings</div></div></div>
+  <div class="col-6 col-xl-2"><div class="kpi"><div class="d-flex justify-content-between"><span class="kpi-label">Sold</span><i class="bi bi-check2-all text-green"></i></div><div class="kpi-value">{{ kpis.sold }}</div><div class="small text-muted">of {{ kpis.total_leads }} leads</div></div></div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-lg-7"><div class="panel"><h2>Leads per week</h2><div class="chart-box"><canvas id="chartWeeks" aria-label="Leads per week chart"></canvas></div></div></div>
+  <div class="col-lg-5"><div class="panel"><h2>Leads by property type</h2><div class="chart-box"><canvas id="chartType" aria-label="Leads by type chart"></canvas></div></div></div>
+  <div class="col-lg-5"><div class="panel"><h2>Top localities</h2><div class="chart-box"><canvas id="chartLocality" aria-label="Leads by locality chart"></canvas></div></div></div>
+  <div class="col-lg-7"><div class="panel"><h2>Acquisition funnel (leads that reached each stage)</h2><div class="chart-box"><canvas id="chartFunnel" aria-label="Funnel chart"></canvas></div></div></div>
+</div>
+{{ charts|json_script:"chart-data" }}
+
+<div class="row g-3">
+  <div class="col-lg-7">
+    <div class="panel">
+      <div class="d-flex justify-content-between"><h2>Latest leads</h2><a href="{% url 'dashboard:leads' %}" class="small">View all</a></div>
+      <div class="table-responsive">
+        <table class="table table-dash align-middle mb-0">
+          <thead><tr><th>Ref</th><th>Owner</th><th>Property</th><th>Price</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for s in recent_leads %}
+            <tr><td><a href="{% url 'dashboard:lead_detail' s.pk %}">{{ s.reference_id }}</a></td><td>{{ s.owner_name }}</td><td>{{ s.title|truncatechars:34 }}</td><td>{{ s.expected_price|inr_short }}</td><td>{% status_badge s.status %}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-5">
+    <div class="panel mb-3">
+      <h2>Upcoming site visits</h2>
+      <ul class="list-unstyled mb-0 small">
+        {% for v in upcoming_visits %}
+        <li class="d-flex justify-content-between border-bottom py-2"><span><strong>{{ v.scheduled_for|date:"d M, h:i A" }}</strong><br><a href="{% url 'dashboard:lead_detail' v.submission_id %}">{{ v.submission.reference_id }}</a> · {{ v.submission.title|truncatechars:28 }}</span><span class="text-muted">{{ v.agent.display_name|default:"-" }}</span></li>
+        {% empty %}<li class="text-muted">No upcoming visits.</li>{% endfor %}
+      </ul>
+    </div>
+    <div class="panel">
+      <h2>Recent activity</h2>
+      <ul class="activity-list">
+        {% for a in recent_activity %}
+        <li><strong>{{ a.action }}</strong>{% if a.submission %} · <a href="{% url 'dashboard:lead_detail' a.submission_id %}">{{ a.submission.reference_id }}</a>{% endif %}<br><span class="text-muted">{{ a.user.display_name|default:"System / website" }} · {{ a.created_at|timesince }} ago</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

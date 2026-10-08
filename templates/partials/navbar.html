@@ -1,0 +1,67 @@
+{% load static %}
+<div class="topbar d-none d-md-block">
+  <div class="container d-flex justify-content-between align-items-center py-1">
+    <span><i class="bi bi-geo-alt"></i> Buying land across all 7 tehsils of Agra district</span>
+    <span class="d-flex gap-3 align-items-center">
+      <a href="tel:+{{ SITE_PHONE_RAW }}"><i class="bi bi-telephone"></i> {{ SITE_PHONE }}</a>
+      <a href="{% url 'submissions:track' %}"><i class="bi bi-search"></i> Track submission</a>
+      <a href="{% url 'partners:join' %}"><i class="bi bi-people"></i> For brokers</a>
+    </span>
+  </div>
+</div>
+<nav class="navbar navbar-expand-xl site-nav sticky-top py-2" aria-label="Main navigation">
+  <div class="container">
+    <a class="brand" href="{% url 'core:home' %}">
+      <img src="{% static 'img/logo.svg' %}" class="brand-mark" alt="{{ SITE_NAME }} logo" width="40" height="40">
+      <span><span class="brand-name">Bhoomi<span>Direct</span></span><span class="brand-sub">Agra</span></span>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    {% with p=request.path %}
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link {% if p == '/price-estimator/' %}active{% endif %}" href="{% url 'locations:estimator' %}">Price Estimate</a></li>
+        <li class="nav-item"><a class="nav-link {% if '/buy-property' in p %}active{% endif %}" href="{% url 'listings:list' %}">Buy Property</a></li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle {% if '/sell-land-in-agra' in p %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Areas</a>
+          <ul class="dropdown-menu shadow border-0">
+            {% for loc in footer_localities|slice:":8" %}<li><a class="dropdown-item" href="{{ loc.get_absolute_url }}">{{ loc.name }}</a></li>{% endfor %}
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item fw-semibold" href="{% url 'locations:area_index' %}">All areas we buy in</a></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link {% if p == '/how-it-works/' %}active{% endif %}" href="{% url 'core:how_it_works' %}">How It Works</a></li>
+        <li class="nav-item"><a class="nav-link {% if '/blog/' in p %}active{% endif %}" href="{% url 'blog:list' %}">Guides</a></li>
+        <li class="nav-item"><a class="nav-link {% if p == '/contact/' %}active{% endif %}" href="{% url 'core:contact' %}">Contact</a></li>
+      </ul>
+      <div class="d-flex flex-wrap flex-xl-nowrap align-items-center gap-2 nav-actions">
+        <div class="lang-toggle" role="group" aria-label="Language">
+          <button type="button" data-lang="en" class="active">EN</button>
+          <button type="button" data-lang="hi" class="hi">हिं</button>
+        </div>
+        {% if user.is_authenticated %}
+        <div class="dropdown">
+          <button class="btn btn-sm btn-light border dropdown-toggle position-relative" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle"></i> {{ user.display_name|truncatechars:14 }}
+            {% if unread_notifications %}<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">{{ unread_notifications }}</span>{% endif %}
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+            {% if user.is_company_staff %}<li><a class="dropdown-item" href="{% url 'dashboard:overview' %}"><i class="bi bi-speedometer2"></i> Company dashboard</a></li>{% endif %}
+            {% if user.is_partner %}<li><a class="dropdown-item" href="{% url 'partners:portal' %}"><i class="bi bi-briefcase"></i> Partner portal</a></li>{% endif %}
+            {% if not user.is_company_staff and not user.is_partner %}<li><a class="dropdown-item" href="{% url 'submissions:owner_dashboard' %}"><i class="bi bi-house"></i> My properties</a></li>{% endif %}
+            <li><a class="dropdown-item" href="{% url 'submissions:notifications' %}"><i class="bi bi-bell"></i> Notifications {% if unread_notifications %}<span class="badge bg-danger">{{ unread_notifications }}</span>{% endif %}</a></li>
+            {% if user.is_superuser %}<li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-gear"></i> Django admin</a></li>{% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li><form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="dropdown-item"><i class="bi bi-box-arrow-right"></i> Logout</button></form></li>
+          </ul>
+        </div>
+        {% else %}
+        <a href="{% url 'accounts:login' %}" class="btn btn-sm btn-light border"><i class="bi bi-person"></i> Login</a>
+        {% endif %}
+        <a class="nav-link nav-sell-btn" href="{% url 'submissions:sell' %}"><i class="bi bi-house-up"></i> <span class="lang-en-text">Sell Property</span><span class="lang-hi-text">ज़मीन बेचें</span></a>
+      </div>
+    </div>
+    {% endwith %}
+  </div>
+</nav>

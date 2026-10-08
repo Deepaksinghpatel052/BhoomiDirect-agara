@@ -1,0 +1,31 @@
+{% extends "dashboard/base.html" %}
+{% load site_tags %}
+{% block dash_title %}Pipeline{% endblock %}
+{% block page_title %}Pipeline board{% endblock %}
+{% block dash_content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <p class="small text-muted mb-0"><i class="bi bi-arrows-move"></i> Drag cards between columns to update status. Every move is saved to status history and the owner is notified.</p>
+  <div class="btn-group btn-group-sm">
+    <a href="?" class="btn btn-light border {% if not mine %}active{% endif %}">All leads</a>
+    <a href="?mine=1" class="btn btn-light border {% if mine %}active{% endif %}">Assigned to me</a>
+  </div>
+</div>
+<div class="kanban" id="kanban" data-move-url="{% url 'dashboard:pipeline_move' %}">
+  {% for col in columns %}
+  <section class="kanban-col" aria-label="{{ col.status.label }}">
+    <h2>{% status_badge col.status.value %} <span class="badge text-bg-light col-count">{{ col.items|length }}</span></h2>
+    <div class="kanban-list" data-status="{{ col.status.value }}">
+      {% for s in col.items %}
+      <article class="kanban-card {% if s.urgency == '1_month' %}urgent{% endif %}" data-pk="{{ s.pk }}">
+        <div class="d-flex justify-content-between"><span class="ref">{{ s.reference_id }}</span>{% if s.urgency == '1_month' %}<i class="bi bi-lightning-fill text-terracotta" title="Urgent seller"></i>{% endif %}</div>
+        <a href="{% url 'dashboard:lead_detail' s.pk %}" class="fw-semibold text-reset text-decoration-none d-block">{{ s.owner_name }}</a>
+        <div class="text-muted">{{ s.get_property_type_display }} · {{ s.locality|default:"-" }}</div>
+        <div class="d-flex justify-content-between mt-1"><span>{{ s.area_display }}</span><strong>{{ s.expected_price|inr_short }}</strong></div>
+        {% if s.assigned_agent %}<div class="small text-muted mt-1"><i class="bi bi-person"></i> {{ s.assigned_agent.display_name }}</div>{% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}

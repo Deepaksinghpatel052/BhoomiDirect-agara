@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block page_header %}{% include "partials/page_header.html" with title="Become a Channel Partner" subtitle="Brokers and property advisors in Agra: refer land owners and buyers, earn transparent commission." %}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-5">
+        <h2 class="h4">Why partner with us</h2>
+        <div class="d-flex gap-3 mb-3"><span class="icon-circle"><i class="bi bi-cash-coin"></i></span><div><h3 class="h6 mb-1">Commission on both sides</h3><p class="small text-muted mb-0">Earn when you refer an owner we buy from, and again when you bring a buyer.</p></div></div>
+        <div class="d-flex gap-3 mb-3"><span class="icon-circle terracotta"><i class="bi bi-shield-check"></i></span><div><h3 class="h6 mb-1">Verified inventory</h3><p class="small text-muted mb-0">Every listing is owned by us with clear title, so your buyers close faster.</p></div></div>
+        <div class="d-flex gap-3 mb-3"><span class="icon-circle gold"><i class="bi bi-phone"></i></span><div><h3 class="h6 mb-1">Partner portal</h3><p class="small text-muted mb-0">See available properties, submit referrals and track their status online.</p></div></div>
+        <div class="d-flex gap-3"><span class="icon-circle"><i class="bi bi-people"></i></span><div><h3 class="h6 mb-1">No exclusivity</h3><p class="small text-muted mb-0">Keep your own business. Work with us on the deals that fit.</p></div></div>
+      </div>
+      <div class="col-lg-7">
+        <div class="card-soft form-card">
+          <h2 class="h4 mb-3">Register as a partner</h2>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="row">
+              {% include "partials/form_field.html" with field=form.name wrapper="col-md-6 mb-3" %}
+              {% include "partials/form_field.html" with field=form.firm_name wrapper="col-md-6 mb-3" %}
+              {% include "partials/form_field.html" with field=form.phone wrapper="col-md-6 mb-3" %}
+              {% include "partials/form_field.html" with field=form.email wrapper="col-md-6 mb-3" %}
+              {% include "partials/form_field.html" with field=form.rera_agent_number wrapper="col-md-6 mb-3" %}
+              {% include "partials/form_field.html" with field=form.experience_years wrapper="col-md-6 mb-3" %}
+              {% include "partials/form_field.html" with field=form.areas_covered wrapper="col-12 mb-3" %}
+              {% include "partials/form_field.html" with field=form.password wrapper="col-md-6 mb-3" %}
+            </div>
+            <p class="small text-muted">Hold Ctrl (Cmd on Mac) to select multiple areas.</p>
+            <button class="btn btn-accent btn-lg">Register</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

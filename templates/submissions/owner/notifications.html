@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block seo %}{% include "partials/seo.html" with page_title="Notifications" %}{% endblock %}
+{% block robots %}noindex{% endblock %}
+{% block content %}
+<section class="section-sm">
+  <div class="container" style="max-width:760px">
+    <h1 class="h3 mb-4"><i class="bi bi-bell text-terracotta"></i> Notifications</h1>
+    <div class="card-soft">
+      <ul class="list-group list-group-flush">
+        {% for n in items %}
+        <li class="list-group-item p-3 {% if not n.is_read %}bg-green-light{% endif %}">
+          <div class="d-flex justify-content-between gap-2">
+            <strong>{% if n.url %}<a href="{{ n.url }}" class="text-reset">{{ n.title }}</a>{% else %}{{ n.title }}{% endif %}</strong>
+            <small class="text-muted text-nowrap">{{ n.created_at|timesince }} ago</small>
+          </div>
+          {% if n.message %}<div class="small text-muted">{{ n.message }}</div>{% endif %}
+        </li>
+        {% empty %}
+        <li class="list-group-item p-4 text-center text-muted">No notifications yet.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</section>
+{% endblock %}

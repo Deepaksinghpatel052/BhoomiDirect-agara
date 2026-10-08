@@ -1,0 +1,37 @@
+{% extends "dashboard/base.html" %}
+{% block dash_title %}Visit report{% endblock %}
+{% block page_title %}Site visit report · {{ visit.submission.reference_id }}{% endblock %}
+{% block dash_content %}
+<div class="row g-3">
+  <div class="col-lg-8">
+    <form method="post" enctype="multipart/form-data" class="panel">
+      {% csrf_token %}
+      <p class="small text-muted">{{ visit.submission.title }} · scheduled {{ visit.scheduled_for|date:"D, d M Y h:i A" }} · agent {{ visit.agent.display_name|default:"-" }}</p>
+      {% include "partials/form_field.html" with field=form.status %}
+      {% include "partials/form_field.html" with field=form.visit_notes %}
+      <h3 class="h6 mt-3">Ground reality checks</h3>
+      <div class="row">
+        {% include "partials/form_field.html" with field=form.boundary_matches_documents wrapper="col-md-6 mb-2" %}
+        {% include "partials/form_field.html" with field=form.road_access_confirmed wrapper="col-md-6 mb-2" %}
+        {% include "partials/form_field.html" with field=form.no_encroachment wrapper="col-md-6 mb-2" %}
+        {% include "partials/form_field.html" with field=form.owner_met_in_person wrapper="col-md-6 mb-2" %}
+      </div>
+      {% include "partials/form_field.html" with field=form.neighbour_feedback %}
+      {% include "partials/form_field.html" with field=form.photos %}
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary">Save report</button>
+        <a href="{% url 'dashboard:lead_detail' visit.submission_id %}" class="btn btn-light border">Back to lead</a>
+      </div>
+    </form>
+  </div>
+  <div class="col-lg-4">
+    <div class="panel">
+      <h3>Owner</h3>
+      <p class="mb-1"><strong>{{ visit.submission.owner_name }}</strong></p>
+      <a href="tel:+91{{ visit.submission.phone }}" class="btn btn-sm btn-outline-green w-100 mb-2"><i class="bi bi-telephone"></i> {{ visit.submission.phone }}</a>
+      <p class="small text-muted mb-0">{{ visit.submission.address|default:visit.submission.landmark }}</p>
+      {% if visit.submission.latitude %}<a class="btn btn-sm btn-light border w-100 mt-2" target="_blank" rel="noopener" href="https://www.openstreetmap.org/?mlat={{ visit.submission.latitude }}&mlon={{ visit.submission.longitude }}#map=17/{{ visit.submission.latitude }}/{{ visit.submission.longitude }}"><i class="bi bi-map"></i> Open pin in map</a>{% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

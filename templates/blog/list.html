@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block page_header %}{% if category %}{% include "partials/page_header.html" with title=category.name subtitle="Guides for land owners in Agra." %}{% else %}{% include "partials/page_header.html" with title="Guides for Land Sellers in Agra" subtitle="Documents, circle rates, mutation, pricing and more, explained simply." %}{% endif %}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="d-flex flex-wrap gap-2 mb-4">
+      <a href="{% url 'blog:list' %}" class="btn btn-sm {% if not category %}btn-primary{% else %}btn-light border{% endif %}">All</a>
+      {% for c in categories %}<a href="{{ c.get_absolute_url }}" class="btn btn-sm {% if category == c %}btn-primary{% else %}btn-light border{% endif %}">{{ c.name }}</a>{% endfor %}
+    </div>
+    <div class="row g-4">
+      {% for post in page_obj %}
+      <div class="col-md-6 col-lg-4">
+        <article class="card-soft card-hover post-card h-100 overflow-hidden d-flex flex-column">
+          <a href="{{ post.get_absolute_url }}">{% if post.cover_image %}<img src="{{ post.cover_image.url }}" alt="{{ post.title }}" loading="lazy" width="640" height="360">{% endif %}</a>
+          <div class="p-3 d-flex flex-column flex-grow-1">
+            {% if post.category %}<span class="chip align-self-start mb-2">{{ post.category.name }}</span>{% endif %}
+            <h2 class="h5"><a href="{{ post.get_absolute_url }}" class="text-reset text-decoration-none">{{ post.title }}</a></h2>
+            <p class="small text-muted">{{ post.excerpt|truncatewords:28 }}</p>
+            <p class="small text-muted mt-auto mb-0">{{ post.published_at|date:"d M Y" }} · {{ post.reading_minutes }} min read</p>
+          </div>
+        </article>
+      </div>
+      {% empty %}
+      <p class="text-muted">No articles yet.</p>
+      {% endfor %}
+    </div>
+    {% include "partials/pagination.html" %}
+  </div>
+</section>
+{% endblock %}

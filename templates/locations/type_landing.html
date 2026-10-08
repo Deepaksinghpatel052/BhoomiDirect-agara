@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static site_tags %}
+{% block seo %}{% include "partials/seo.html" with seo_title=config.title seo_description=config.description %}{% endblock %}
+{% block content %}
+<section class="hero hero-photo" style="padding-bottom:110px; --hero-img: url('{% static config.hero_image %}')">
+  <div class="container position-relative" style="z-index:2">
+    {% include "partials/breadcrumbs.html" %}
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-7">
+        <h1 class="mb-3">{{ config.h1 }}</h1>
+        <p class="hero-sub mb-4">{{ config.intro }}</p>
+        <ul class="list-unstyled mb-4">
+          {% for p in config.points %}<li class="mb-2"><i class="bi bi-check-circle-fill text-green"></i> {{ p }}</li>{% endfor %}
+        </ul>
+        <a href="{% url 'submissions:sell' %}" class="btn btn-accent btn-lg">Submit your property</a>
+      </div>
+      <div class="col-lg-5">
+        <div class="hero-card">
+          <h2 class="mb-3">Request a free evaluation</h2>
+          <form method="post" action="{% url 'submissions:quick_lead' %}" novalidate>
+            {% csrf_token %}
+            {% for field in quick_form %}{% include "partials/form_field.html" with field=field %}{% endfor %}
+            <button class="btn btn-accent w-100 btn-lg">Get my offer</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="text-center mb-4">
+      <span class="eyebrow">Process</span>
+      <h2 class="section-title">How we buy</h2>
+    </div>
+    <div class="row g-4 steps-row">{% include "core/_steps.html" %}</div>
+  </div>
+</section>
+
+{% if localities %}
+<section class="section bg-beige">
+  <div class="container">
+    <h2 class="section-title mb-4">Areas with active demand</h2>
+    <div class="row g-3">
+      {% for loc in localities|slice:":12" %}
+      <div class="col-6 col-md-4 col-lg-3"><a href="{{ loc.get_absolute_url }}" class="card-soft card-hover area-card"><i class="bi bi-geo-alt-fill"></i><span><strong class="d-block">{{ loc.name }}</strong><small>{{ loc.tehsil.name }}</small></span></a></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section">
+  <div class="container" style="max-width:860px">
+    <h2 class="section-title mb-4 text-center">Frequently asked questions</h2>
+    {% include "partials/faq_accordion.html" with faqs=faqs accordion_id="typeFaq" %}
+  </div>
+</section>
+
+{% if listings %}
+<section class="section-sm">
+  <div class="container">
+    <h2 class="h4 mb-3">Recently listed by us</h2>
+    <div class="row g-3">{% for listing in listings %}<div class="col-md-4">{% include "partials/property_card.html" %}</div>{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+{% include "partials/cta_band.html" %}
+{% endblock %}

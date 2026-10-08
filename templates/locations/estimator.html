@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static site_tags %}
+{% block seo %}{% include "partials/seo.html" with seo_title="Land Price Estimator Agra | Instant Plot & Bigha Rate Estimate" seo_description="Get an instant indicative price for your plot or agricultural land in Agra based on locality, type and area in gaj, bigha or acre." %}{% endblock %}
+{% block page_header %}{% include "partials/page_header.html" with title="Instant Price Estimate" subtitle="Indicative range in 10 seconds. Get the exact offer after a free evaluation." %}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <form method="get" class="card-soft form-card" id="estimatorForm" data-api="{% url 'locations:estimator_api' %}" novalidate>
+          {% if form.non_field_errors %}<div class="alert alert-warning small">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+          {% include "partials/form_field.html" with field=form.locality %}
+          {% include "partials/form_field.html" with field=form.property_type %}
+          <div class="row">
+            {% include "partials/form_field.html" with field=form.area_value wrapper="col-7 mb-3" %}
+            {% include "partials/form_field.html" with field=form.area_unit wrapper="col-5 mb-3" %}
+          </div>
+          <button class="btn btn-primary btn-lg w-100"><i class="bi bi-calculator"></i> Calculate estimate</button>
+        </form>
+      </div>
+      <div class="col-lg-6">
+        <div class="estimate-result h-100 d-flex flex-column justify-content-center" id="estimateBox" aria-live="polite">
+          {% if result %}
+          <div class="small text-uppercase" style="letter-spacing:.1em;color:#cfe2d6">Indicative market range</div>
+          <div class="range my-2" id="estRange">{{ result.low|inr_short }} – {{ result.high|inr_short }}</div>
+          <div class="small" id="estDetail" style="color:#d7e8dd">Area ≈ {{ result.sq_meter|indian_number }} sq m · Sample circle rate {{ result.rate_per_sq_meter|inr }}/sq m ({{ result.rate_year }}) · Circle value {{ result.circle_value|inr }}</div>
+          {% else %}
+          <div class="small text-uppercase" style="letter-spacing:.1em;color:#cfe2d6">Indicative market range</div>
+          <div class="range my-2" id="estRange">₹ — </div>
+          <div class="small" id="estDetail" style="color:#d7e8dd">Choose locality, type and area to see an estimate.</div>
+          {% endif %}
+          <hr style="border-color:rgba(255,255,255,.25)">
+          <p class="small mb-3" style="color:#d7e8dd">Range = sample circle rate × area × {{ low_mult }} to {{ high_mult }} market multiplier. Actual offer depends on road width, legal status, frontage and demand.</p>
+          <a href="{% url 'submissions:sell' %}" class="btn btn-gold btn-lg">Get exact offer, submit your property</a>
+        </div>
+      </div>
+    </div>
+    <p class="disclaimer mt-4"><i class="bi bi-exclamation-triangle"></i> <strong>Disclaimer:</strong> This is an indicative estimate using sample circle rates for demo, not official rates. It is not a valuation certificate or an offer to buy.</p>
+  </div>
+</section>
+{% endblock %}
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const $form = $("#estimatorForm");
+  $form.on("submit", function (e) {
+    e.preventDefault();
+    const params = $form.serialize();
+    $("#estRange").html('<span class="spinner-border"></span>');
+    $.getJSON($form.data("api"), params)
+      .done(function (res) {
+        if (res.ok) {
+          $("#estRange").text(res.low + " – " + res.high).hide().fadeIn(300);
+          $("#estDetail").text("Area ≈ " + Math.round(res.sq_meter).toLocaleString("en-IN") + " sq m · Sample circle rate " + res.rate + "/sq m (" + res.year + ") · Circle value " + res.circle_value);
+          history.replaceState(null, "", "?" + params);
+        } else {
+          $("#estRange").text("₹ —");
+          $("#estDetail").text(res.message);
+        }
+      })
+      .fail(function () {
+        $("#estRange").text("₹ —");
+        $("#estDetail").text("Please fill all fields with valid values.");
+        showToast("Please select locality, type and enter area.", "danger");
+      });
+  });
+});
+</script>
+{% endblock %}

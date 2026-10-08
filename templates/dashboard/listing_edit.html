@@ -1,0 +1,24 @@
+{% extends "dashboard/base.html" %}
+{% block dash_title %}Edit listing{% endblock %}
+{% block page_title %}Edit listing{% endblock %}
+{% block dash_content %}
+<div class="row g-3">
+  <div class="col-lg-8">
+    <form method="post" class="panel">
+      {% csrf_token %}
+      {% for field in form %}{% include "partials/form_field.html" with field=field %}{% endfor %}
+      <div class="d-flex gap-2">
+        <button class="btn btn-primary">Save listing</button>
+        <a href="{% url 'dashboard:inventory' %}" class="btn btn-light border">Cancel</a>
+        <a href="{{ listing.get_absolute_url }}" target="_blank" class="btn btn-outline-green ms-auto"><i class="bi bi-box-arrow-up-right"></i> View public page</a>
+      </div>
+    </form>
+  </div>
+  <div class="col-lg-4">
+    <div class="panel">
+      <h3>Photos ({{ listing.photos.count }})</h3>
+      <div class="photo-strip d-flex flex-wrap gap-2">{% for p in listing.photos.all %}<img src="{{ p.image.url }}" alt="{{ p.alt_text }}">{% empty %}<span class="small text-muted">Photos copied from the owner submission appear here. Manage more in Django admin.</span>{% endfor %}</div>
+    </div>
+  </div>
+</div>
+{% endblock %}

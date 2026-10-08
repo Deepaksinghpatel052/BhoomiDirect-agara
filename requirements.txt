@@ -1,0 +1,10 @@
+# Core
+Django==5.2.18
+Pillow==12.3.0
+asgiref==3.12.1
+sqlparse==0.6.0
+tzdata==2026.5
+
+# Production server (used inside Docker)
+gunicorn==26.2.0
+whitenoise==6.12.0

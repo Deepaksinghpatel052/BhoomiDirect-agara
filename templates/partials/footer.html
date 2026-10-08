@@ -1,0 +1,50 @@
+{% load static %}
+<footer class="site-footer">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <a class="brand mb-3" href="{% url 'core:home' %}">
+          <img src="{% static 'img/logo.svg' %}" class="brand-mark" alt="" width="40" height="40" loading="lazy">
+          <span class="brand-name">Bhoomi<span>Direct</span> Agra</span>
+        </a>
+        <p class="mt-3">{{ SITE_TAGLINE }}</p>
+        <p class="small mb-1"><i class="bi bi-geo-alt"></i> {{ SITE_ADDRESS }}</p>
+        <p class="small mb-1"><i class="bi bi-telephone"></i> <a href="tel:+{{ SITE_PHONE_RAW }}">{{ SITE_PHONE }}</a></p>
+        <p class="small"><i class="bi bi-envelope"></i> <a href="mailto:{{ SITE_EMAIL }}">{{ SITE_EMAIL }}</a></p>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h3>Sell to us</h3>
+        <ul class="list-unstyled footer-links">
+          <li><a href="{% url 'submissions:sell' %}">Submit property</a></li>
+          <li><a href="{% url 'locations:sell_plot' %}">Sell plot in Agra</a></li>
+          <li><a href="{% url 'locations:sell_agricultural' %}">Sell agricultural land</a></li>
+          <li><a href="{% url 'locations:sell_commercial' %}">Sell commercial land</a></li>
+          <li><a href="{% url 'locations:estimator' %}">Price estimator</a></li>
+          <li><a href="{% url 'submissions:track' %}">Track submission</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-lg-3">
+        <h3>Areas we buy in</h3>
+        <ul class="list-unstyled footer-links row row-cols-1 g-0">
+          {% for loc in footer_localities %}<li><a href="{{ loc.get_absolute_url }}">Sell land in {{ loc.name }}</a></li>{% endfor %}
+        </ul>
+      </div>
+      <div class="col-lg-3">
+        <h3>Company</h3>
+        <ul class="list-unstyled footer-links">
+          <li><a href="{% url 'core:about' %}">About us</a></li>
+          <li><a href="{% url 'core:how_it_works' %}">How it works</a></li>
+          <li><a href="{% url 'listings:list' %}">Buy property</a></li>
+          <li><a href="{% url 'partners:join' %}">Channel partners</a></li>
+          <li><a href="{% url 'blog:list' %}">Guides &amp; blog</a></li>
+          <li><a href="{% url 'core:faq' %}">FAQ</a></li>
+          <li><a href="{% url 'core:contact' %}">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="bottom d-flex flex-column flex-md-row justify-content-between gap-2">
+      <span>&copy; {% now "Y" %} {{ SITE_NAME }}. Demo website. All data shown is sample data.</span>
+      <span><a href="{% url 'core:privacy' %}">Privacy</a> · <a href="{% url 'core:terms' %}">Terms</a> · <a href="/sitemap.xml">Sitemap</a> · <a href="{% url 'core:photo_credits' %}">Photo credits</a></span>
+    </div>
+  </div>
+</footer>

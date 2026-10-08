@@ -1,0 +1,51 @@
+{% extends "dashboard/base.html" %}
+{% load site_tags %}
+{% block dash_title %}Leads{% endblock %}
+{% block page_title %}All leads <span class="badge text-bg-light border">{{ total }}</span>{% endblock %}
+{% block dash_content %}
+<form method="get" class="panel mb-3">
+  <div class="row g-2 align-items-end">
+    <div class="col-md-3">{{ form.q }}</div>
+    <div class="col-6 col-md-2">{{ form.status }}</div>
+    <div class="col-6 col-md-2">{{ form.property_type }}</div>
+    <div class="col-6 col-md-2">{{ form.locality }}</div>
+    <div class="col-6 col-md-1">{{ form.urgency }}</div>
+    <div class="col-6 col-md-2">{{ form.agent }}</div>
+    <div class="col-6 col-md-2"><label class="small text-muted">From</label>{{ form.date_from }}</div>
+    <div class="col-6 col-md-2"><label class="small text-muted">To</label>{{ form.date_to }}</div>
+    <div class="col-md-8 d-flex gap-2 justify-content-md-end">
+      <button class="btn btn-sm btn-primary"><i class="bi bi-funnel"></i> Filter</button>
+      <a href="{% url 'dashboard:leads' %}" class="btn btn-sm btn-light border">Reset</a>
+      {% if user.is_admin_role or user.role == 'evaluator' %}
+      <a href="{% url 'dashboard:leads_export' %}?{{ request.GET.urlencode }}" class="btn btn-sm btn-gold"><i class="bi bi-download"></i> Export CSV</a>
+      {% endif %}
+    </div>
+  </div>
+</form>
+<div class="panel">
+  <div class="table-responsive">
+    <table class="table table-dash table-hover align-middle mb-0">
+      <thead><tr><th>Ref</th><th>Owner</th><th>Type</th><th>Locality</th><th>Area</th><th>Expected</th><th>Urgency</th><th>Agent</th><th>Status</th><th>Created</th></tr></thead>
+      <tbody>
+        {% for s in page_obj %}
+        <tr>
+          <td><a href="{% url 'dashboard:lead_detail' s.pk %}" class="fw-semibold">{{ s.reference_id }}</a>{% if not s.is_complete %} <span class="badge text-bg-light border" title="Quick lead, details pending">Quick</span>{% endif %}</td>
+          <td>{{ s.owner_name }}<br><a href="tel:{{ s.phone }}" class="small text-muted">{{ s.phone }}</a></td>
+          <td>{{ s.get_property_type_display }}</td>
+          <td>{{ s.locality|default:"-" }}</td>
+          <td>{{ s.area_display }}</td>
+          <td>{{ s.expected_price|inr_short }}</td>
+          <td><span class="small {% if s.urgency == '1_month' %}text-terracotta fw-semibold{% endif %}">{{ s.get_urgency_display }}</span></td>
+          <td>{{ s.assigned_agent.display_name|default:"-" }}</td>
+          <td>{% status_badge s.status %}</td>
+          <td class="small text-muted text-nowrap">{{ s.created_at|date:"d M Y" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="10" class="text-center text-muted p-4">No leads match the filters.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% include "partials/pagination.html" %}
+</div>
+{% endblock %}

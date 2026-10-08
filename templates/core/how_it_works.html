@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block page_header %}{% include "partials/page_header.html" with title="How Selling Your Land Works" subtitle="Five steps. One buyer. Full transparency." %}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4 steps-row mb-5">{% include "core/_steps.html" %}</div>
+    <div class="row g-4">
+      <div class="col-lg-8">
+        <div class="card-soft p-4">
+          <h2 class="h4">What happens after you submit</h2>
+          <ol class="mt-3">
+            <li class="mb-3"><strong>Within 24 hours:</strong> a relationship manager calls you to confirm details and documents.</li>
+            <li class="mb-3"><strong>Within 3 days:</strong> a field agent visits the property, checks boundaries, road access and ground reality.</li>
+            <li class="mb-3"><strong>Evaluation:</strong> our team scores location potential, road access, legal clarity, price vs market, resale demand and nearby development.</li>
+            <li class="mb-3"><strong>Legal verification:</strong> title chain, Khatauni, mutation (dakhil kharij), encumbrance and owner ID.</li>
+            <li class="mb-3"><strong>Written offer:</strong> you see it in your online dashboard and can accept, reject or counter.</li>
+            <li><strong>Registry:</strong> we book the sub-registrar slot, pay stamp duty and transfer the full amount at registry.</li>
+          </ol>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="card-soft p-4 h-100">
+          <h2 class="h5">Documents to keep ready</h2>
+          <ul class="list-unstyled mt-3 mb-4">
+            <li class="mb-2"><i class="bi bi-file-earmark-text text-terracotta"></i> Registry / sale deed</li>
+            <li class="mb-2"><i class="bi bi-file-earmark-text text-terracotta"></i> Latest Khatauni (for agricultural land)</li>
+            <li class="mb-2"><i class="bi bi-file-earmark-text text-terracotta"></i> Mutation / dakhil kharij order</li>
+            <li class="mb-2"><i class="bi bi-file-earmark-text text-terracotta"></i> Aadhaar and PAN of all owners</li>
+            <li class="mb-2"><i class="bi bi-file-earmark-text text-terracotta"></i> Site map / naksha (if any)</li>
+          </ul>
+          <a href="{% url 'submissions:sell' %}" class="btn btn-accent w-100">Start now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

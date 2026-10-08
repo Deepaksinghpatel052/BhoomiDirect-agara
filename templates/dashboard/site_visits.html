@@ -1,0 +1,33 @@
+{% extends "dashboard/base.html" %}
+{% block dash_title %}Site visits{% endblock %}
+{% block page_title %}Site visits{% if user.role == 'field_agent' %} (my visits){% endif %}{% endblock %}
+{% block dash_content %}
+<div class="btn-group btn-group-sm mb-3">
+  <a href="?show=upcoming" class="btn btn-light border {% if show == 'upcoming' %}active{% endif %}">Upcoming</a>
+  <a href="?show=done" class="btn btn-light border {% if show == 'done' %}active{% endif %}">Completed</a>
+  <a href="?show=all" class="btn btn-light border {% if show == 'all' %}active{% endif %}">All</a>
+</div>
+{% for day, visits in days.items %}
+<div class="panel mb-3">
+  <h2 class="h6"><i class="bi bi-calendar-event text-terracotta"></i> {{ day|date:"l, d F Y" }}</h2>
+  <div class="table-responsive">
+    <table class="table table-dash align-middle mb-0">
+      <tbody>
+        {% for v in visits %}
+        <tr>
+          <td style="width:90px"><strong>{{ v.scheduled_for|time:"h:i A" }}</strong></td>
+          <td><a href="{% url 'dashboard:lead_detail' v.submission_id %}">{{ v.submission.reference_id }}</a><br><span class="small text-muted">{{ v.submission.title }}</span></td>
+          <td>{{ v.submission.owner_name }}<br><a href="tel:+91{{ v.submission.phone }}" class="small">{{ v.submission.phone }}</a></td>
+          <td>{{ v.agent.display_name|default:"-" }}</td>
+          <td><span class="badge text-bg-{% if v.status == 'completed' %}success{% elif v.status == 'cancelled' %}secondary{% else %}warning{% endif %}">{{ v.get_status_display }}</span></td>
+          <td class="text-end"><a href="{% url 'dashboard:visit_report' v.pk %}" class="btn btn-sm btn-outline-green">Report</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% empty %}
+<div class="panel text-center text-muted p-5">No site visits in this view.</div>
+{% endfor %}
+{% endblock %}

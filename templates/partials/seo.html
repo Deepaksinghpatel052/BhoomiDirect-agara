@@ -1,0 +1,15 @@
+{% load static %}{% firstof seo_description meta_description SITE_TAGLINE as desc %}
+{% if seo_title %}<title>{{ seo_title }}</title>{% elif page_title %}<title>{{ page_title }} | {{ SITE_NAME }}</title>{% else %}<title>Sell Land, Plot &amp; Agricultural Property in Agra Directly | {{ SITE_NAME }}</title>{% endif %}
+  <meta name="description" content="{{ desc|striptags|truncatechars:160 }}">
+  <link rel="canonical" href="{{ SITE_DOMAIN }}{{ request.path }}">
+  <meta property="og:site_name" content="{{ SITE_NAME }}">
+  <meta property="og:type" content="{{ og_type|default:'website' }}">
+  <meta property="og:title" content="{% firstof seo_title page_title SITE_NAME %}">
+  <meta property="og:description" content="{{ desc|striptags|truncatechars:200 }}">
+  <meta property="og:url" content="{{ SITE_DOMAIN }}{{ request.path }}">
+  <meta property="og:image" content="{% if seo_image %}{{ seo_image }}{% else %}{{ SITE_DOMAIN }}{% static 'img/og-default.png' %}{% endif %}">
+  <meta property="og:locale" content="en_IN">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{% firstof seo_title page_title SITE_NAME %}">
+  <meta name="twitter:description" content="{{ desc|striptags|truncatechars:200 }}">
+  <meta name="twitter:image" content="{% if seo_image %}{{ seo_image }}{% else %}{{ SITE_DOMAIN }}{% static 'img/og-default.png' %}{% endif %}">

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+{% block robots %}noindex, follow{% endblock %}
+{% block page_header %}{% include "partials/page_header.html" with title="Photo Credits" subtitle="Demo photographs from Wikimedia Commons, used under free licenses. They will be replaced with the company's own property photos before launch." %}{% endblock %}
+{% block content %}
+<section class="section-sm">
+  <div class="container">
+    <div class="row g-3">
+      {% for c in credits %}
+      <div class="col-6 col-md-4 col-lg-3">
+        <figure class="card-soft overflow-hidden h-100 mb-0">
+          <img src="{% static 'img/photos/' %}{{ c.file }}" alt="{{ c.title }}" loading="lazy" class="w-100 object-cover" style="aspect-ratio:16/10">
+          <figcaption class="p-2 small">
+            <a href="{{ c.source }}" target="_blank" rel="noopener">{{ c.title|truncatechars:48 }}</a><br>
+            <span class="text-muted">{{ c.artist|default:"Unknown author" }} · {{ c.license }}</span>
+          </figcaption>
+        </figure>
+      </div>
+      {% empty %}
+      <p class="text-muted">No photo credits recorded.</p>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

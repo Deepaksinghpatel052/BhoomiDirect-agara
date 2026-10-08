@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block seo %}{% include "partials/seo.html" with page_title="Contact Us" seo_description="Call, WhatsApp or visit BhoomiDirect Agra on Fatehabad Road. We buy land and plots across Agra district." %}{% endblock %}
+{% block page_header %}{% include "partials/page_header.html" with title="Contact Us" subtitle="Call, WhatsApp or visit our Agra office. We usually reply within an hour in working time." %}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <div class="card-soft form-card">
+          <h2 class="h4 mb-3">Send us a message</h2>
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="row">
+              {% include "partials/form_field.html" with field=form.name wrapper="col-md-6 mb-3" %}
+              {% include "partials/form_field.html" with field=form.phone wrapper="col-md-6 mb-3" %}
+              {% include "partials/form_field.html" with field=form.email wrapper="col-md-6 mb-3" %}
+              {% include "partials/form_field.html" with field=form.subject wrapper="col-md-6 mb-3" %}
+            </div>
+            {% include "partials/form_field.html" with field=form.message %}
+            <button class="btn btn-primary btn-lg">Send message</button>
+          </form>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="card-soft p-4 mb-4">
+          <h2 class="h5">Office</h2>
+          <p class="mb-2"><i class="bi bi-geo-alt text-terracotta"></i> {{ SITE_ADDRESS }}</p>
+          <p class="mb-2"><i class="bi bi-telephone text-terracotta"></i> <a href="tel:+{{ SITE_PHONE_RAW }}">{{ SITE_PHONE }}</a></p>
+          <p class="mb-2"><i class="bi bi-envelope text-terracotta"></i> <a href="mailto:{{ SITE_EMAIL }}">{{ SITE_EMAIL }}</a></p>
+          <p class="mb-3"><i class="bi bi-clock text-terracotta"></i> Mon - Sat, 9:30 am - 7:00 pm</p>
+          <div class="d-flex gap-2">
+            <a href="tel:+{{ SITE_PHONE_RAW }}" class="btn btn-outline-green flex-fill"><i class="bi bi-telephone"></i> Call</a>
+            <a href="https://wa.me/{{ SITE_WHATSAPP }}" class="btn btn-whatsapp flex-fill" target="_blank" rel="noopener"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+          </div>
+        </div>
+        <div class="map-box sm" data-map='{"lat": {{ office.lat }}, "lng": {{ office.lng }}, "zoom": 14, "label": "{{ SITE_NAME }} office"}' role="region" aria-label="Office location map"></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

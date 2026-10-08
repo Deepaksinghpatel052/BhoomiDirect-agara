@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load site_tags %}
+{% block seo %}{% include "partials/seo.html" with page_title="My Properties" %}{% endblock %}
+{% block robots %}noindex{% endblock %}
+{% block content %}
+<section class="page-header">
+  <div class="container d-flex flex-wrap justify-content-between align-items-end gap-3">
+    <div>
+      <span class="eyebrow">Owner portal</span>
+      <h1 class="mb-0">Namaste, {{ user.display_name }}</h1>
+    </div>
+    <a href="{% url 'submissions:sell' %}" class="btn btn-accent"><i class="bi bi-plus-lg"></i> Submit another property</a>
+  </div>
+</section>
+<section class="section-sm">
+  <div class="container">
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3"><div class="card-soft p-3"><div class="small text-muted">Total submitted</div><div class="h3 mb-0">{{ submissions|length }}</div></div></div>
+      <div class="col-6 col-md-3"><div class="card-soft p-3"><div class="small text-muted">In progress</div><div class="h3 mb-0">{{ active_count }}</div></div></div>
+      <div class="col-6 col-md-3"><div class="card-soft p-3"><div class="small text-muted">Open offers</div><div class="h3 mb-0 text-terracotta">{{ open_offers|length }}</div></div></div>
+      <div class="col-6 col-md-3"><div class="card-soft p-3"><div class="small text-muted">Sold to us</div><div class="h3 mb-0 text-green">{{ acquired_count }}</div></div></div>
+    </div>
+
+    {% for offer in open_offers %}
+    <div class="alert alert-warning d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <span><i class="bi bi-bell-fill"></i> New offer of <strong>{{ offer.amount|inr_short }}</strong> for {{ offer.submission.reference_id }}, valid till {{ offer.valid_till|date:"d M Y" }}.</span>
+      <a href="{% url 'submissions:owner_submission' offer.submission.reference_id %}#offers" class="btn btn-sm btn-accent">Respond now</a>
+    </div>
+    {% endfor %}
+
+    <h2 class="h4 mb-3">My submissions</h2>
+    <div class="row g-3">
+      {% for s in submissions %}
+      <div class="col-md-6 col-lg-4">
+        <a href="{% url 'submissions:owner_submission' s.reference_id %}" class="card-soft card-hover d-block p-3 text-decoration-none text-reset h-100">
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <span class="small text-muted">{{ s.reference_id }}</span>
+            {% status_badge s.status %}
+          </div>
+          <h3 class="h6 mb-1">{{ s.title }}</h3>
+          <p class="small text-muted mb-2">{{ s.area_display }} · Expected {{ s.expected_price|inr_short }}</p>
+          <div class="progress" style="height:6px"><div class="progress-bar" style="width:{% if s.pipeline_index >= 0 %}{{ s.pipeline_index|add:1|percent_of:10 }}{% else %}100{% endif %}%"></div></div>
+          <p class="small text-muted mt-2 mb-0">Updated {{ s.updated_at|timesince }} ago</p>
+        </a>
+      </div>
+      {% empty %}
+      <div class="col-12">
+        <div class="card-soft p-5 text-center">
+          <p class="lead-muted">You have not submitted any property yet.</p>
+          <a href="{% url 'submissions:sell' %}" class="btn btn-accent btn-lg">Submit your first property</a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

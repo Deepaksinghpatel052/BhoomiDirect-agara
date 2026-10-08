@@ -1,0 +1,41 @@
+{% extends "dashboard/base.html" %}
+{% load site_tags %}
+{% block dash_title %}Acquired{% endblock %}
+{% block page_title %}Acquired properties{% endblock %}
+{% block dash_content %}
+{% if ready %}
+<div class="panel mb-3 border-warning">
+  <h2 class="h6"><i class="bi bi-hourglass-split text-terracotta"></i> Offer accepted: ready for registry ({{ ready|length }})</h2>
+  <ul class="list-unstyled mb-0 small">
+    {% for s in ready %}<li class="py-1"><a href="{% url 'dashboard:lead_detail' s.pk %}">{{ s.reference_id }}</a> · {{ s.title }} · {{ s.owner_name }}</li>{% endfor %}
+  </ul>
+</div>
+{% endif %}
+<div class="panel">
+  <div class="d-flex justify-content-between mb-2"><h2 class="h6 mb-0">{{ items|length }} properties acquired</h2><span class="small text-muted">Total investment: <strong>{{ total_cost|inr_short }}</strong></span></div>
+  <div class="table-responsive">
+    <table class="table table-dash align-middle mb-0">
+      <thead><tr><th>Ref</th><th>Property</th><th>Purchase price</th><th>Total cost</th><th>Purchased</th><th>Registry</th><th>Resale</th></tr></thead>
+      <tbody>
+        {% for a in items %}
+        <tr>
+          <td><a href="{% url 'dashboard:lead_detail' a.submission_id %}">{{ a.submission.reference_id }}</a></td>
+          <td>{{ a.submission.title }}<br><span class="small text-muted">{{ a.submission.area_display }}</span></td>
+          <td>{{ a.purchase_price|inr_short }}</td>
+          <td>{{ a.total_cost|inr_short }}</td>
+          <td>{{ a.purchase_date|date:"d M Y" }}</td>
+          <td>{{ a.registry_date|date:"d M Y"|default:"-" }}</td>
+          <td>
+            {% with listing=a.listing_or_none %}
+            {% if listing %}<a href="{{ listing.get_absolute_url }}" target="_blank" class="badge text-bg-{{ listing.status_css }} text-decoration-none">{{ listing.get_status_display }}</a>
+            {% elif user.is_admin_role %}<form method="post" action="{% url 'dashboard:publish_listing' a.pk %}">{% csrf_token %}<button class="btn btn-sm btn-accent"><i class="bi bi-megaphone"></i> Publish for Resale</button></form>
+            {% else %}<span class="text-muted small">Not published</span>{% endif %}
+            {% endwith %}
+          </td>
+        </tr>
+        {% empty %}<tr><td colspan="7" class="text-center text-muted p-4">No acquisitions yet.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

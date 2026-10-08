@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load site_tags %}
+{% block seo %}{% include "partials/seo.html" with page_title="Partner Portal" %}{% endblock %}
+{% block robots %}noindex{% endblock %}
+{% block content %}
+<section class="page-header">
+  <div class="container d-flex flex-wrap justify-content-between align-items-end gap-2">
+    <div>
+      <span class="eyebrow">Channel partner portal</span>
+      <h1 class="mb-0">{{ partner.name }}{% if partner.firm_name %} <small class="text-muted fs-5">· {{ partner.firm_name }}</small>{% endif %}</h1>
+    </div>
+    {% if partner.is_approved %}<span class="badge text-bg-success fs-6"><i class="bi bi-patch-check"></i> Approved partner</span>{% else %}<span class="badge text-bg-warning fs-6">Approval pending</span>{% endif %}
+  </div>
+</section>
+<section class="section-sm">
+  <div class="container">
+    {% if not partner.is_approved %}<div class="alert alert-warning">Your account is awaiting approval by our team. You can browse inventory, but referrals open after approval.</div>{% endif %}
+    <div class="row g-4">
+      <div class="col-lg-6">
+        <div class="card-soft p-4 h-100">
+          <h2 class="h5"><i class="bi bi-person-plus text-terracotta"></i> Refer a land owner</h2>
+          <form method="post" action="{% url 'partners:refer_owner' %}" novalidate>
+            {% csrf_token %}
+            <div class="row">
+              {% include "partials/form_field.html" with field=owner_form.owner_name wrapper="col-md-6 mb-2" %}
+              {% include "partials/form_field.html" with field=owner_form.phone wrapper="col-md-6 mb-2" %}
+              {% include "partials/form_field.html" with field=owner_form.property_type wrapper="col-md-6 mb-2" %}
+              {% include "partials/form_field.html" with field=owner_form.locality wrapper="col-md-6 mb-2" %}
+              {% include "partials/form_field.html" with field=owner_form.notes wrapper="col-12 mb-2" %}
+            </div>
+            <button class="btn btn-primary" {% if not partner.is_approved %}disabled{% endif %}>Submit owner lead</button>
+          </form>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="card-soft p-4 h-100">
+          <h2 class="h5"><i class="bi bi-person-check text-terracotta"></i> Refer a buyer</h2>
+          <form method="post" action="{% url 'partners:refer_buyer' %}" novalidate>
+            {% csrf_token %}
+            <div class="row">
+              {% include "partials/form_field.html" with field=buyer_form.listing wrapper="col-12 mb-2" %}
+              {% include "partials/form_field.html" with field=buyer_form.name wrapper="col-md-6 mb-2" %}
+              {% include "partials/form_field.html" with field=buyer_form.phone wrapper="col-md-6 mb-2" %}
+              {% include "partials/form_field.html" with field=buyer_form.budget wrapper="col-md-6 mb-2" %}
+              {% include "partials/form_field.html" with field=buyer_form.message wrapper="col-md-6 mb-2" %}
+            </div>
+            <button class="btn btn-primary" {% if not partner.is_approved %}disabled{% endif %}>Submit buyer referral</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="h4 mt-5 mb-3">Available inventory to sell</h2>
+    <div class="table-responsive card-soft">
+      <table class="table align-middle mb-0">
+        <thead class="table-light"><tr><th>Property</th><th>Locality</th><th>Area</th><th>Price</th><th></th></tr></thead>
+        <tbody>
+          {% for l in listings %}
+          <tr><td>{{ l.title }}</td><td>{{ l.locality.name }}</td><td>{{ l.area_display }}</td><td>{{ l.price|inr_short }}</td><td><a href="{{ l.get_absolute_url }}" target="_blank" class="btn btn-sm btn-outline-green">View</a></td></tr>
+          {% empty %}<tr><td colspan="5" class="text-muted text-center p-4">No available inventory right now.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="row g-4 mt-2">
+      <div class="col-lg-6">
+        <h2 class="h5 mt-3">My owner referrals</h2>
+        <ul class="list-group">
+          {% for s in owner_referrals %}<li class="list-group-item d-flex justify-content-between align-items-center"><span><strong>{{ s.reference_id }}</strong> · {{ s.owner_name }} · {{ s.locality }}</span>{% status_badge s.status %}</li>{% empty %}<li class="list-group-item text-muted">No referrals yet.</li>{% endfor %}
+        </ul>
+      </div>
+      <div class="col-lg-6">
+        <h2 class="h5 mt-3">My buyer referrals</h2>
+        <ul class="list-group">
+          {% for b in buyer_referrals %}<li class="list-group-item d-flex justify-content-between"><span><strong>{{ b.name }}</strong> · {{ b.listing.title|truncatechars:40 }}</span><span class="badge text-bg-light border">{{ b.get_status_display }}</span></li>{% empty %}<li class="list-group-item text-muted">No referrals yet.</li>{% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

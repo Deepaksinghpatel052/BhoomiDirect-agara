@@ -1,0 +1,8 @@
+{# Usage: {% include "partials/page_header.html" with title="..." subtitle="..." %} #}
+<section class="page-header">
+  <div class="container">
+    {% include "partials/breadcrumbs.html" %}
+    <h1>{{ title }}</h1>
+    {% if subtitle %}<p class="lead-muted mb-0">{{ subtitle }}</p>{% endif %}
+  </div>
+</section>

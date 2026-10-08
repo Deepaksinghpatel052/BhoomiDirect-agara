@@ -1,0 +1,56 @@
+{% extends "dashboard/base.html" %}
+{% load site_tags %}
+{% block dash_title %}Localities &amp; rates{% endblock %}
+{% block page_title %}Localities &amp; sample circle rates{% endblock %}
+{% block dash_content %}
+<div class="row g-3">
+  <div class="col-xl-6">
+    <div class="panel">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h2 class="h6 mb-0">Localities ({{ localities|length }})</h2>
+        {% if user.is_admin_role %}<a href="{% url 'dashboard:locality_new' %}" class="btn btn-sm btn-primary"><i class="bi bi-plus"></i> Add locality</a>{% endif %}
+      </div>
+      <div class="table-responsive" style="max-height:620px">
+        <table class="table table-dash align-middle mb-0">
+          <thead><tr><th>Name</th><th>Tehsil</th><th>Type</th><th>Leads</th><th></th></tr></thead>
+          <tbody>
+            {% for l in localities %}
+            <tr>
+              <td><a href="{{ l.get_absolute_url }}" target="_blank">{{ l.name }}</a>{% if l.is_featured %} <i class="bi bi-star-fill text-gold"></i>{% endif %}</td>
+              <td>{{ l.tehsil.name }}</td><td class="small">{{ l.get_locality_type_display }}</td><td>{{ l.n_leads }}</td>
+              <td class="text-end">{% if user.is_admin_role %}<a href="{% url 'dashboard:locality_edit' l.pk %}" class="btn btn-sm btn-light border">Edit</a>{% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-6">
+    <div class="panel mb-3">
+      <h2 class="h6">Sample circle rates <span class="sample-tag">Sample, not official</span></h2>
+      {% if user.is_admin_role %}
+      <form method="post" action="{% url 'dashboard:circle_rate_new' %}" class="row g-2 align-items-end mb-3">
+        {% csrf_token %}
+        <div class="col-md-4">{{ rate_form.locality }}</div>
+        <div class="col-md-3">{{ rate_form.property_type }}</div>
+        <div class="col-md-2">{{ rate_form.rate_per_sq_meter }}</div>
+        <div class="col-md-2">{{ rate_form.effective_year }}</div>
+        <div class="col-md-1"><button class="btn btn-sm btn-primary w-100" title="Add rate">+</button></div>
+      </form>
+      {% endif %}
+      <div class="table-responsive" style="max-height:520px">
+        <table class="table table-dash align-middle mb-0">
+          <thead><tr><th>Locality</th><th>Category</th><th>₹ / sq m</th><th>₹ / gaj</th><th>Year</th><th></th></tr></thead>
+          <tbody>
+            {% for r in rates %}
+            <tr><td>{{ r.locality.name }}</td><td>{{ r.get_property_type_display }}</td><td>{{ r.rate_per_sq_meter|inr }}</td><td>{{ r.rate_per_sq_yard|inr }}</td><td>{{ r.effective_year }}</td>
+              <td class="text-end">{% if user.is_admin_role %}<a href="{% url 'dashboard:circle_rate_edit' r.pk %}" class="btn btn-sm btn-light border">Edit</a>{% endif %}</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+<div class="row g-4">
+  {% for listing in page_obj %}
+  <div class="col-sm-6 col-xl-4 col-listing">{% include "partials/property_card.html" %}</div>
+  {% empty %}
+  <div class="col-12">
+    <div class="card-soft p-5 text-center">
+      <i class="bi bi-search display-6 text-muted"></i>
+      <p class="lead-muted mt-2">No properties match these filters.</p>
+      <a href="{% url 'listings:list' %}" class="btn btn-outline-green">Clear filters</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% include "partials/pagination.html" %}

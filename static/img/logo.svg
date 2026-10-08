@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="BhoomiDirect logo">
+  <rect width="64" height="64" rx="16" fill="#1f5f3f"/>
+  <path d="M10 44 Q32 30 54 44 L54 54 L10 54 Z" fill="#c8963e"/>
+  <path d="M10 48 Q32 38 54 48" stroke="#b5502f" stroke-width="2.5" fill="none"/>
+  <path d="M32 12 L46 24 L46 36 L18 36 L18 24 Z" fill="#fcfaf6"/>
+  <rect x="28" y="27" width="8" height="9" rx="1" fill="#b5502f"/>
+  <path d="M15 25 L32 10 L49 25" stroke="#c8963e" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -1,0 +1,57 @@
+/* Staff dashboard layout */
+body.dashboard { background: #f4f1eb; padding-bottom: 0; }
+.dash-wrap { display: flex; min-height: 100vh; }
+.dash-sidebar {
+  width: 250px; flex-shrink: 0; background: var(--bd-green-dark); color: #cfe0d5; position: sticky; top: 0; height: 100vh; overflow-y: auto;
+  display: flex; flex-direction: column;
+}
+.dash-sidebar .brand { padding: 18px 20px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.dash-sidebar .brand-name { color: #fff; }
+.dash-sidebar .nav-label { font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: #8fb39d; padding: 16px 20px 6px; }
+.dash-sidebar a.dash-link {
+  display: flex; align-items: center; gap: 10px; padding: 9px 20px; color: #d6e6dc; text-decoration: none; font-weight: 500; font-size: .93rem;
+  border-left: 3px solid transparent;
+}
+.dash-sidebar a.dash-link:hover { background: rgba(255,255,255,.06); color: #fff; }
+.dash-sidebar a.dash-link.active { background: rgba(200,150,62,.16); color: #fff; border-left-color: var(--bd-gold); }
+.dash-sidebar .dash-user { margin-top: auto; padding: 16px 20px; border-top: 1px solid rgba(255,255,255,.08); font-size: .85rem; }
+.dash-main { flex: 1; min-width: 0; }
+.dash-topbar { background: #fff; border-bottom: 1px solid var(--bd-border); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: 0; z-index: 1020; }
+.dash-content { padding: 24px; }
+@media (max-width: 991px) {
+  .dash-sidebar { position: fixed; left: -260px; z-index: 1045; transition: left .25s; }
+  .dash-sidebar.open { left: 0; box-shadow: 0 0 40px rgba(0,0,0,.3); }
+  .dash-content { padding: 16px; }
+}
+.kpi { background: #fff; border-radius: 14px; padding: 18px; border: 1px solid var(--bd-border); height: 100%; }
+.kpi .kpi-label { font-size: .8rem; color: var(--bd-muted); text-transform: uppercase; letter-spacing: .05em; }
+.kpi .kpi-value { font-family: var(--font-head); font-size: 1.7rem; font-weight: 700; color: var(--bd-green-dark); }
+.kpi .bi { font-size: 1.4rem; }
+.panel { background: #fff; border-radius: 14px; border: 1px solid var(--bd-border); padding: 18px; }
+.panel h2, .panel h3 { font-size: 1rem; margin-bottom: 12px; }
+.chart-box { position: relative; height: 260px; }
+.table-dash { font-size: .9rem; }
+.table-dash th { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: var(--bd-muted); font-weight: 600; white-space: nowrap; }
+
+/* Kanban */
+.kanban { display: flex; gap: 14px; overflow-x: auto; padding-bottom: 12px; align-items: flex-start; }
+.kanban-col { flex: 0 0 260px; background: #ebe6dc; border-radius: 14px; padding: 10px; max-height: calc(100vh - 190px); display: flex; flex-direction: column; }
+.kanban-col h2 { font-size: .85rem; display: flex; justify-content: space-between; align-items: center; margin: 4px 4px 10px; }
+.kanban-list { min-height: 80px; overflow-y: auto; flex: 1; padding: 2px; }
+.kanban-card { background: #fff; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.08); cursor: grab; font-size: .85rem; border-left: 4px solid var(--bd-green); }
+.kanban-card:active { cursor: grabbing; }
+.kanban-card.urgent { border-left-color: var(--bd-terracotta); }
+.kanban-card .ref { font-size: .72rem; color: var(--bd-muted); }
+.kanban-placeholder { border: 2px dashed var(--bd-gold); border-radius: 10px; height: 70px; margin-bottom: 8px; background: rgba(200,150,62,.08); }
+.ui-sortable-helper { transform: rotate(2deg); box-shadow: 0 10px 24px rgba(0,0,0,.2) !important; }
+
+/* Lead detail */
+.score-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+.score-row label { width: 170px; font-size: .88rem; margin: 0; }
+.score-row .score-val { width: 30px; text-align: right; font-weight: 700; color: var(--bd-green-dark); }
+.score-total { font-family: var(--font-head); font-size: 2rem; font-weight: 700; }
+.photo-strip img { width: 110px; height: 80px; object-fit: cover; border-radius: 8px; }
+.activity-list { list-style: none; padding: 0; margin: 0; max-height: 380px; overflow-y: auto; }
+.activity-list li { padding: 8px 0; border-bottom: 1px dashed var(--bd-border); font-size: .85rem; }
+.nav-tabs .nav-link { color: var(--bd-muted); font-weight: 600; }
+.nav-tabs .nav-link.active { color: var(--bd-green-dark); }

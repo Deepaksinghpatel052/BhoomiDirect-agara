@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static site_tags %}
+{% block seo %}<title>{% block dash_title %}Dashboard{% endblock %} | {{ SITE_NAME }} Staff</title>{% endblock %}
+{% block robots %}noindex, nofollow{% endblock %}
+{% block body_class %}dashboard{% endblock %}
+{% block extra_css %}<link href="{% asset 'css/dashboard.css' %}" rel="stylesheet">{% endblock %}
+{% block navbar %}{% endblock %}
+{% block footer %}{% endblock %}
+{% block floating %}{% endblock %}
+{% block messages %}{% endblock %}
+
+{% block content %}
+<div class="dash-wrap">
+  <aside class="dash-sidebar" id="dashSidebar" aria-label="Dashboard navigation">
+    <a class="brand" href="{% url 'dashboard:overview' %}">
+      <img src="{% static 'img/logo.svg' %}" class="brand-mark" alt="" width="36" height="36">
+      <span><span class="brand-name">Bhoomi<span>Direct</span></span><span class="brand-sub" style="color:#8fb39d">Staff dashboard</span></span>
+    </a>
+    <div class="nav-label">Acquisition</div>
+    <a href="{% url 'dashboard:overview' %}" class="dash-link {% if nav == 'overview' %}active{% endif %}"><i class="bi bi-speedometer2"></i> Overview</a>
+    <a href="{% url 'dashboard:pipeline' %}" class="dash-link {% if nav == 'pipeline' %}active{% endif %}"><i class="bi bi-kanban"></i> Pipeline board</a>
+    <a href="{% url 'dashboard:leads' %}" class="dash-link {% if nav == 'leads' %}active{% endif %}"><i class="bi bi-table"></i> All leads</a>
+    <a href="{% url 'dashboard:site_visits' %}" class="dash-link {% if nav == 'visits' %}active{% endif %}"><i class="bi bi-calendar-week"></i> Site visits</a>
+    <a href="{% url 'dashboard:acquisitions' %}" class="dash-link {% if nav == 'acquired' %}active{% endif %}"><i class="bi bi-bank"></i> Acquired</a>
+    <div class="nav-label">Resale</div>
+    <a href="{% url 'dashboard:inventory' %}" class="dash-link {% if nav == 'inventory' %}active{% endif %}"><i class="bi bi-house-check"></i> Inventory &amp; sales</a>
+    <a href="{% url 'dashboard:inquiries' %}" class="dash-link {% if nav == 'inquiries' %}active{% endif %}"><i class="bi bi-chat-dots"></i> Buyer inquiries</a>
+    <a href="{% url 'dashboard:partners' %}" class="dash-link {% if nav == 'partners' %}active{% endif %}"><i class="bi bi-people"></i> Channel partners</a>
+    <div class="nav-label">Settings</div>
+    <a href="{% url 'dashboard:locations' %}" class="dash-link {% if nav == 'locations' %}active{% endif %}"><i class="bi bi-geo-alt"></i> Localities &amp; rates</a>
+    {% if user.is_superuser %}<a href="{% url 'admin:index' %}" class="dash-link"><i class="bi bi-gear"></i> Django admin</a>{% endif %}
+    <a href="{% url 'core:home' %}" class="dash-link" target="_blank"><i class="bi bi-box-arrow-up-right"></i> View website</a>
+    <div class="dash-user">
+      <div class="fw-semibold text-white">{{ user.display_name }}</div>
+      <div class="small mb-2">{% if user.is_superuser %}Super admin{% else %}{{ user.get_role_display }}{% endif %}</div>
+      <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="btn btn-sm btn-outline-light w-100"><i class="bi bi-box-arrow-right"></i> Logout</button></form>
+    </div>
+  </aside>
+  <div class="dash-main">
+    <div class="dash-topbar">
+      <div class="d-flex align-items-center gap-2">
+        <button class="btn btn-sm btn-light border d-lg-none" id="sidebarToggle" aria-label="Open menu"><i class="bi bi-list"></i></button>
+        <h1 class="h5 mb-0">{% block page_title %}Dashboard{% endblock %}</h1>
+      </div>
+      <form class="d-none d-md-flex" method="get" action="{% url 'dashboard:leads' %}" role="search">
+        <input class="form-control form-control-sm" name="q" placeholder="Search ref ID, name, phone..." aria-label="Search leads" style="width:260px">
+      </form>
+    </div>
+    {% include "partials/messages.html" %}
+    <div class="dash-content">{% block dash_content %}{% endblock %}</div>
+  </div>
+</div>
+{% endblock %}
+
+{% block vendor_js %}<script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js" defer></script>{% endblock %}
+{% block extra_js %}<script src="{% asset 'js/dashboard.js' %}" defer></script>{% block dash_js %}{% endblock %}{% endblock %}

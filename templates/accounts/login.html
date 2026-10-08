@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block seo %}{% include "partials/seo.html" with page_title="Login" %}{% endblock %}
+{% block robots %}noindex{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:480px">
+    <div class="card-soft form-card">
+      <h1 class="h3 mb-1">Welcome back</h1>
+      <p class="text-muted mb-4">Owners, partners and staff log in here.</p>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="alert alert-danger small">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+        {% include "partials/form_field.html" with field=form.username %}
+        {% include "partials/form_field.html" with field=form.password %}
+        <input type="hidden" name="next" value="{{ next }}">
+        <button class="btn btn-primary btn-lg w-100">Log in</button>
+      </form>
+      <p class="small text-center mt-3 mb-0">New owner? <a href="{% url 'accounts:signup' %}">Create an account</a></p>
+    </div>
+    <div class="card-soft p-3 mt-3 small">
+      <span class="demo-pill">DEMO LOGINS</span>
+      <table class="table table-sm small mb-0 mt-2">
+        <tr><td>Admin</td><td><code>admin / admin123</code></td></tr>
+        <tr><td>Evaluator</td><td><code>evaluator / demo123</code></td></tr>
+        <tr><td>Field agent</td><td><code>agent / demo123</code></td></tr>
+        <tr><td>Owner</td><td><code>owner / demo123</code></td></tr>
+        <tr><td>Channel partner</td><td><code>partner / demo123</code></td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}

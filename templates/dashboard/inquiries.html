@@ -1,0 +1,34 @@
+{% extends "dashboard/base.html" %}
+{% load site_tags %}
+{% block dash_title %}Buyer inquiries{% endblock %}
+{% block page_title %}Buyer inquiries{% endblock %}
+{% block dash_content %}
+<div class="btn-group btn-group-sm mb-3 flex-wrap">
+  <a href="?" class="btn btn-light border {% if not status %}active{% endif %}">All</a>
+  {% for value, label in statuses %}<a href="?status={{ value }}" class="btn btn-light border {% if status == value %}active{% endif %}">{{ label }}</a>{% endfor %}
+</div>
+<div class="panel">
+  <div class="table-responsive">
+    <table class="table table-dash align-middle mb-0">
+      <thead><tr><th>Date</th><th>Buyer</th><th>Listing</th><th>Budget</th><th>Message</th><th>Referred by</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for i in items %}
+        <tr>
+          <td class="small text-nowrap">{{ i.created_at|date:"d M Y" }}</td>
+          <td><strong>{{ i.name }}</strong><br><a href="tel:+91{{ i.phone }}" class="small">{{ i.phone }}</a> · <a href="https://wa.me/91{{ i.phone }}" target="_blank" rel="noopener" class="small text-success"><i class="bi bi-whatsapp"></i></a></td>
+          <td><a href="{{ i.listing.get_absolute_url }}" target="_blank">{{ i.listing.title|truncatechars:36 }}</a></td>
+          <td>{{ i.budget|inr_short }}</td>
+          <td class="small">{{ i.message|truncatechars:60 }}</td>
+          <td class="small">{{ i.referred_by|default:"Website" }}</td>
+          <td>
+            <select class="form-select form-select-sm js-inquiry-status" data-url="{% url 'dashboard:inquiry_status' i.pk %}" aria-label="Inquiry status">
+              {% for value, label in statuses %}<option value="{{ value }}" {% if i.status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}
+            </select>
+          </td>
+        </tr>
+        {% empty %}<tr><td colspan="7" class="text-center text-muted p-4">No inquiries.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

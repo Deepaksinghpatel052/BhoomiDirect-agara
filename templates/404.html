@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block seo %}<title>Page not found | {{ SITE_NAME }}</title>{% endblock %}
+{% block robots %}noindex{% endblock %}
+{% block content %}
+<section class="error-page">
+  <div class="container text-center py-5">
+    <div class="error-code">404</div>
+    <h1 class="h3 mt-3">This plot seems to be missing</h1>
+    <p class="lead-muted">The page you are looking for has moved or does not exist.</p>
+    <div class="d-flex flex-wrap gap-2 justify-content-center mt-4">
+      <a href="{% url 'core:home' %}" class="btn btn-primary">Go to home</a>
+      <a href="{% url 'submissions:sell' %}" class="btn btn-accent">Sell your property</a>
+      <a href="{% url 'listings:list' %}" class="btn btn-outline-green">Browse properties</a>
+    </div>
+  </div>
+</section>
+{% endblock %}
